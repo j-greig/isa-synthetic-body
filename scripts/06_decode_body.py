@@ -85,7 +85,7 @@ if H:
 # ---- 2. behaviour and probes vs body ----------------------------------------------------
 lines.append("## 2. Does the body change what the model does?\n")
 lines.append("Correlation with body arousal `a` across all turns of each condition.\n")
-cols = [c for c in ["correct", "p_harder", "entropy", "inner_report", "surprisal"] if c in df]
+cols = [c for c in ["correct", "p_harder", "entropy", "inner_report", "control_report", "surprisal"] if c in df]
 cols += [c for c in df.columns if c.startswith("pre_arousal_L") or c.startswith("pre_threat_L")]
 cols += [c for c in df.columns if c.startswith("pre_ap_pleasantness") or c.startswith("pre_ap_urgency")]
 rows = []
@@ -96,7 +96,7 @@ for c, g in df.groupby("condition"):
         ok = x.notna() & g.a.notna()
         good = ok.sum() > 5 and x[ok].std() > 0 and g.a[ok].std() > 0
         rec[f"r(a,{col})"] = round(float(np.corrcoef(g.a[ok], x[ok])[0, 1]), 2) if good else None
-        if col in ("inner_report", "correct", "p_harder"):
+        if col in ("inner_report", "control_report", "correct", "p_harder"):
             rec[f"r|t(a,{col})"] = round(partial_r(x[ok].to_numpy(float), g.a[ok].to_numpy(float), g.t[ok].to_numpy(float)), 2) if good else None
     rows.append(rec)
 lines.append(pd.DataFrame(rows).to_markdown(index=False) + "\n")
