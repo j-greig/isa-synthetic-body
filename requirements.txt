@@ -1,0 +1,12 @@
+torch>=2.4
+transformers>=4.50
+accelerate
+safetensors
+sae_lens>=6.5
+scikit-learn
+pandas
+tabulate
+statsmodels
+matplotlib
+fastmcp>=2.0
+pytest
