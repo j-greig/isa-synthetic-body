@@ -8,6 +8,7 @@
 #   MODEL=google/gemma-3-1b-it REPEATS=2 bash scripts/run_mac.sh
 set -uo pipefail
 export PYTORCH_ENABLE_MPS_FALLBACK=1   # CPU fallback for any op MPS lacks
+export PYTHONUNBUFFERED=1             # live progress in the log
 cd "$(dirname "$0")/.."
 
 MODEL="${MODEL:-unsloth/gemma-3-1b-it}"

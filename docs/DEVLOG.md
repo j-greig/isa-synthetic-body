@@ -55,6 +55,22 @@ The canonical record of what was done, where, with what, and what came out.
 
 - `00_check_env.py --model_id unsloth/gemma-3-1b-it`: loaded in bfloat16 on MPS; 3.3 tok/s on the first call (includes warm-up).
 
+## 2026-10-15: Mac pipeline run 1 (`scripts/run_mac.sh`)
+
+**Where:** jamess-macbook-air-local (Apple M1, 16 GB, macOS 14.8.3), MPS, bfloat16, Python 3.14.4, torch 2.14.1.
+**Model:** `unsloth/gemma-3-1b-it` @ `5b11413a10db4e486ef16a20101fd028f8f2499c` (same snapshot as the cloud runs).
+**Command:** `caffeinate -i bash scripts/run_mac.sh` (log: `logs/pipeline_20261015T184930Z.log`).
+
+| Step | run_id | Commit | Result |
+|---|---|---|---|
+| env | 20261015T184932Z-967805 | 3690de6* | 9.3 tok/s on MPS |
+| probes | 20261015T184958Z-2e6b94 | 3690de6* | Appraisal and arousal accuracy 1.00 at L7, L13, L17 (191 s) |
+| heldout | 20261015T185311Z-a4718b | 4642563 | Threat-vs-challenge AUC L13 0.54, **L17 0.69** (no body words 0.84); arousal L13 0.83, L17 0.97. **Reproduces the cloud result** (0.55 / 0.70) |
+
+\* Marked dirty because `isa/provenance.py` was edited during the run (the untracked-files fix, committed as `4642563`); no experiment code changed.
+
+**Process notes:** Python output was block-buffered under `tee`, so live progress didn't show. Fixed in `run_mac.sh` (`PYTHONUNBUFFERED=1`) for future runs.
+
 ---
 
 ## Template for new entries
