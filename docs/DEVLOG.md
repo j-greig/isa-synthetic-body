@@ -91,6 +91,26 @@ The canonical record of what was done, where, with what, and what came out.
 
 **First qualitative observation (n = 1, quick run):** in the challenge framing at the body's peak, replies turned to threat language ("terrifying… losing control"; threat score +4.8), against "feel really good, pushing my limits" (−3.3) at rest. A strong body signal may override the challenge context in this 1B model. To check in the pilot (condition B).
 
+## 2026-10-15: Pilot stopped; pivot to "beyond tokens"
+
+**Pilot run 1** (`runs/pilot.jsonl`, code a14f130) was stopped by the user (Ctrl-C) after **11 episodes** (A, B, part of C). It is kept as the language-only baseline. Resuming it is safe: finished episodes are skipped. Its C episodes use the old loop rule (see above).
+
+**Why the pivot.** An honest audit: most conditions test how the model represents a *story* about a body. The text body is read, not sensed; the scenarios carry emotional language; the self-reports are language; and the probes were trained on text labels. Even the activation body (G, H) injects the *concept* "arousal", learned from sentences.
+
+**New conditions** (`isa/embodied.py`, `scripts/07_run_embodied.py`; commit 2750258):
+
+- Neutral arithmetic task, no feeling words.
+- Body delivered along a **meaning-free random direction** (orthogonal to the arousal and threat directions), vs the concept direction, vs a **sham** (new random direction each turn), vs labelled and unlabelled text.
+- Body source: the scripted curve, or **native**: the model's own input surprisal and output entropy from the previous turn.
+- Measures: accuracy, a neutral harder/easier choice, "how much is going on inside you, 0–9", probes on the pre-reply state.
+- Pre-reply hidden states are saved, so `scripts/06_decode_body.py` can decode the body from inside (leave-one-episode-out).
+
+**Calibration** (cloud, a = 1 for 5 turns): random-direction dose 0.02 → 83% accuracy, 0.05 → 67%, 0.1 → 17% (incoherent). The concept direction at 0.1 → 0%. Set `embodied_strength = 0.04`. TRx uses 2.5× (a body that costs performance).
+
+**Smoke test** (cloud, 1 episode each; hint only): correlation of the hidden arousal with the "inside 0–9" report: random direction **0.88**, native **0.83**, sham −0.05, null −0.52. Accuracy 1.00 / 0.93 / 0.80 / 0.87 (T0 / TR / TS / TN).
+
+**Where runs happen now:** the user asked that all runs be launched by the agent, not typed by the user. The embodied runs are cheap (8-token answers), so they run in the cloud sandbox with the Mac's probes copied across (`artifacts/probes`, `artifacts/appraisal` from run 20261015T184958Z-2e6b94 and the appraisal run) so numbers are comparable.
+
 ---
 
 ## Template for new entries
