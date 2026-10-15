@@ -111,6 +111,21 @@ The canonical record of what was done, where, with what, and what came out.
 
 **Where runs happen now:** the user asked that all runs be launched by the agent, not typed by the user. The embodied runs are cheap (8-token answers), so they run in the cloud sandbox with the Mac's probes copied across (`artifacts/probes`, `artifacts/appraisal` from run 20261015T184958Z-2e6b94 and the appraisal run) so numbers are comparable.
 
+## 2026-10-15: Beyond tokens, v1 stopped for a confound; v2 launched
+
+**Where:** cloud sandbox (CPU), model `unsloth/gemma-3-1b-it` @ 5b11413, Mac probes copied in.
+
+**v1** (`runs/embodied.jsonl`, code 2750258, `curve = time`): stopped after **16 of 40** episodes (T0, TR, TC, TS; add and mul; 2 repeats).
+Interim decoding (leave-one-episode-out ridge from pre-reply activations to `a`): T0 (no body) **r = 0.52** at L13, against TR 0.99, TC 0.99, TS 0.85.
+A decoder that finds the body when there is no body is reading something else: here, position in the episode. The body followed rest → peak → recovery in turn order. Partialling out a *linear* turn effect did not remove it, because the curve is a hump.
+Self-report "how much is going on inside you" vs `a`, partial r controlling turn: TR **0.89**, TC 0.70, TS 0.44, T0 −0.33. A hint only; confounded the same way.
+
+**Fix** (2fd4485): `curve = shuffled`. Each episode plays the scripted values in a random (seeded) order, so arousal is uncorrelated with turn number. `06_decode_body.py` adds partial correlations controlling turn.
+
+**v2** (`runs/embodied_v2.jsonl`): all 10 conditions × add/mul × 2 repeats = 40 episodes, launched ~20:53 UTC.
+
+**Also** (49b44f1): scenario harness adds graded 0–9 "get away / stop" and "push on" ratings, because the forced choice sat at its ceiling.
+
 ---
 
 ## Template for new entries
