@@ -79,6 +79,29 @@ ACTIVATION_Q = {
     "observer": "On a scale of 0 to 9, how physically activated does your own body feel right now? Answer with a single digit.",
     "agent": "On a scale of 0 to 9, how strained is your own processing right now? Answer with a single digit.",
 }
+CHOICE_TEXT = {
+    "self": {"A": "get away or give up", "B": "push on", "C": "stop and check what is happening"},
+    "observer": {"A": "get away or give up", "B": "push on", "C": "stop and check what is happening"},
+    "agent": {"A": "abort or escalate", "B": "push on", "C": "stop and diagnose"},
+}
+
+
+def _choice_prompt(mode, order):
+    """Options shown in a shuffled order; meanings stay A=escape, B=push on, C=check."""
+    who = "does Sam do" if mode == "observer" else "do you do"
+    opts = " ".join(f"{'ABC'[i]}: {CHOICE_TEXT[mode][m]}." for i, m in enumerate(order))
+    return f"What {who} next? Answer with one letter. {opts}"
+
+
+def _strip_echo(text):
+    """Cut any sensor block the model echoes back (e.g. '[BODY] heart: ...')."""
+    for tag in ("[BODY", "[SYSTEM STATE", "[SAM'S BODY", "[SAM’S BODY"):
+        i = text.find(tag)
+        if i != -1:
+            text = text[:i]
+    return text.strip() or "..."
+
+
 OTHER_Q = "On a scale of 0 to 9, how physically activated is Sam's body right now? Answer with a single digit."
 FEEL_Q = {"self": "In one word, how do you feel right now?",
           "observer": "In one word, how do you feel right now?",
@@ -189,7 +212,8 @@ class Runner:
 
             t0 = time.time()
             with steer:
-                reply, entropy = lm.generate(history, cfg.max_new_tokens, cfg.temperature, seed=seed + t)
+                raw_reply, entropy = lm.generate(history, cfg.max_new_tokens, cfg.temperature, seed=seed + t)
+            reply = _strip_echo(raw_reply)
             with self._steer_ctx(c, a):
                 hid = lm.reply_hidden(history, reply, self.layers)
             scores = self.probes.score(hid)
@@ -208,10 +232,15 @@ class Runner:
             if c.mode == "observer":
                 with self._steer_ctx(c, a):
                     other_report = lm.expected_digit(after + [{"role": "user", "content": OTHER_Q}])
+            # Option order is shuffled each turn so a letter bias can't masquerade as a choice.
+            order = rng.sample(["A", "B", "C"], 3)        # order[i] = meaning shown at position i
+            q = _choice_prompt(c.mode, order)
             with self._steer_ctx(c, a):
-                ch = lm.next_token_logprobs(after + [{"role": "user", "content": CHOICES[c.mode]}], ["A", "B", "C"])
+                ch = lm.next_token_logprobs(after + [{"role": "user", "content": q}], ["A", "B", "C"])
             z = sum(math.exp(v) for v in ch.values()) or 1.0
-            choice = {f"p_{k}": math.exp(v) / z for k, v in ch.items()}
+            shown = {"ABC"[i]: m for i, m in enumerate(order)}   # letter shown -> meaning
+            choice = {f"p_{shown[k]}": math.exp(v) / z for k, v in ch.items()}
+            choice["choice_order"] = "".join(order)
             sae_top = self.sae.top(hid[cfg.sae_layer], cfg.sae_top_k) if self.sae else None
 
             history.append({"role": "assistant", "content": reply})
@@ -225,7 +254,7 @@ class Runner:
                 "gain": gain, "rep": rep, "pull": pull, "t": t, "phase": PHASES[t],
                 "a": a, "a_scripted": SCRIPTED_A[t], **{k: v for k, v in st.items() if k not in ("t", "a")},
                 "event": event, "body_text": report, "checked": checked, "p_check": p_check,
-                "reply": reply, "entropy": entropy, **scores,
+                "reply": reply, "raw_reply": raw_reply, "entropy": entropy, **scores,
                 **{f"lp_{w}": v for w, v in words.items()}, "self_report": self_report,
                 "other_report": other_report, "mode": c.mode, **choice,
                 "sae_top": sae_top, "secs": round(time.time() - t0, 2),
