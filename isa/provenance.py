@@ -101,7 +101,7 @@ def record(out, config=None, model_id=None, device=None, data=None, outputs=None
         "git": {
             "commit": _git("rev-parse", "HEAD"),
             "branch": _git("rev-parse", "--abbrev-ref", "HEAD"),
-            "dirty": bool(diff) or bool(_git("status", "--porcelain")),
+            "dirty": bool(diff) or bool(_git("status", "--porcelain", "--untracked-files=no")),
             "diff_sha256": hashlib.sha256(diff.encode()).hexdigest() if diff else None,
         },
         "config": cfg,
