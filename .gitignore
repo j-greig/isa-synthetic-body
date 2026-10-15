@@ -6,3 +6,6 @@ __pycache__/
 artifacts/
 runs/
 data/crowd-enVent/
+queue/pending/
+queue/running/
+queue/done/
