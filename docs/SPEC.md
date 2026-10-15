@@ -134,22 +134,22 @@ Every condition runs both framings across 5 human scenarios (2 agent scenarios f
 
 ### Phase 1: Look inside (1 day)
 
-- [ ] `python scripts/01_explore_features.py --layer 13`
-- [ ] Repeat for `--layer 17`
-- [ ] Look up the top feature IDs on Neuronpedia; note useful ones in `docs/features.md`
+- [x] `python scripts/01_explore_features.py --layer 13` *(cloud, 15 Oct: top threat features 2404, 278, 4258; excited 743, 896, 1983)*
+- [x] Repeat for `--layer 17` *(threat 687, 550, 563; excited 1008, 1804, 807)*
+- [ ] Label the top features: Neuronpedia, or locally with `python scripts/01b_label_features.py --layer 13 --features ...` → `docs/features_L13.md`
 
 ### Phase 2: Probes (½ day)
 
-- [ ] `python scripts/02_train_probes.py`
-- [ ] Check `artifacts/probes/report.json`: appraisal accuracy ≥ 0.85
-- [ ] If accuracy is a perfect 1.0, treat it with suspicion (likely picking up topic words); try held-out wording
-- [ ] Note: scores are scaled so training passages sit at −1 (challenge) / +1 (threat). In multi-turn runs the absolute level drifts (seen in testing: +2 to +13), so analysis uses **change from each episode's rest turns**. Compare conditions on these deltas, not raw levels
+- [x] `python scripts/02_train_probes.py` *(315 passages)*
+- [x] Check `artifacts/probes/report.json`: appraisal accuracy ≥ 0.85 *(1.00 at layers 7, 13, 17)*
+- [x] If accuracy is a perfect 1.0, treat it with suspicion; try held-out wording: `python scripts/02b_validate_probes.py`. *Result: threat-vs-challenge held-out AUC 0.55 at layer 13 (near chance) but 0.70 at layer 17 (0.80 without body words); arousal AUC 0.83 / 0.97. So the layer-13 appraisal probe was learning template wording. The closed loop and analysis now use layer 17.*
+- [x] Note: scores are scaled so training passages sit at −1 (challenge) / +1 (threat). In multi-turn runs the absolute level drifts (seen in testing: +2 to +13), so analysis uses **change from each episode's rest turns**. Compare conditions on these deltas, not raw levels
 
-- [ ] Optional: `bash scripts/00b_get_crowdenvent.sh`, then `python scripts/02c_train_appraisal.py` (appraisal + emotion probes from crowd-enVent; check `artifacts/appraisal/report.json`; the corpus has no stated licence, so it is git-ignored)
+- [x] Optional: `bash scripts/00b_get_crowdenvent.sh`, then `python scripts/02c_train_appraisal.py` (appraisal + emotion probes from crowd-enVent; check `artifacts/appraisal/report.json`; the corpus has no stated licence, so it is git-ignored). *Result (520 texts, cross-validated): mean appraisal r 0.37 at layer 13 / 0.34 at 17; best: pleasantness ~0.6, unpleasantness 0.64, goal support 0.51; weakest: predict_conseq, accept_conseq ~0.2. Emotion accuracy 0.41 (13 classes, chance 0.08).*
 
 ### Phase 3: Body (½ day)
 
-- [ ] `python scripts/03_body_demo.py`, then look at `artifacts/figures/body_demo.png`
+- [x] `python scripts/03_body_demo.py`, then look at `artifacts/figures/body_demo.png`
 - [ ] Optional: add the MCP server to Claude Desktop and talk to it
 
 ### Phase 4: Smoke test (½ day)

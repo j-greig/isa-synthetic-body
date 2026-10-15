@@ -14,7 +14,7 @@ class Config:
     # Layers (Gemma 3 1B has 26). Gemma Scope 2 1B-it SAEs exist at 7, 13, 17, 22.
     inject_layer: int = 7         # activation body (condition G) is added here
     probe_layers: tuple = (13, 17)
-    loop_layer: int = 13          # probe layer whose threat score drives the closed loop
+    loop_layer: int = 17          # probe layer whose threat score drives the closed loop (17 generalises better on held-out text)
 
     # SAE (optional; needs ~150 MB per layer)
     sae_release: str = "gemma-scope-2-1b-it-res"
