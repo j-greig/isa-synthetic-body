@@ -71,6 +71,26 @@ The canonical record of what was done, where, with what, and what came out.
 
 **Process notes:** Python output was block-buffered under `tee`, so live progress didn't show. Fixed in `run_mac.sh` (`PYTHONUNBUFFERED=1`) for future runs.
 
+## 2026-10-15: Mac pipeline run 1, steps 4–6
+
+**Where:** as above. **Log:** `logs/pipeline_20261015T184930Z.log`.
+
+| Step | run_id | Code | Result |
+|---|---|---|---|
+| appraisal | see `logs/runs.jsonl` (02c, ~12 min) | c3989a7 | 1,560 crowd-enVent texts (120 per emotion), 5-fold CV. **L13 mean r 0.46**, emotion accuracy 0.47 (macro-F1 0.47); L17 0.42 / 0.42. L13 best: pleasantness 0.70, unpleasantness 0.66, goal support 0.59, self-responsibility 0.57; weakest: accept_conseq 0.21, predict_conseq 0.24. Up from the cloud's 520-text run (0.37 / 0.41) |
+| features | 20261015T190555Z-9389fe, …190615Z-70aaf5, …190635Z-2e1867, …190822Z-ae7097 | c3989a7 | Top features labelled in `docs/features_L13.md`, `docs/features_L17.md` (commit 81a3fac). Interpretable: L17 #687 alarm or salient sound (threat side); L13 #743 purposeful activity, #1983 voluntary challenge (challenge side); L17 #125 second-person body report (valence-neutral); L17 #96 action onset |
+| quick | 20261015T191009Z-27e132 | **c3989a7** (manifest says a14f130; see note) | 8 episodes, ~7 s/turn, ~2.5 min/episode on MPS |
+
+**Provenance bug:** manifests recorded the git commit at the *end* of a run, so a run that spanned a commit was attributed to the later code. Fixed: the commit is now captured at script start (`git`), plus `git_at_end`. The quick run's real code was c3989a7. The pilot (started 19:31 UTC) ran **a14f130**, whatever its manifest says.
+
+**Problems found in the quick run, and fixes**
+
+1. **Echoed sensor text.** The model copied `[BODY] …` into its replies. Fix a14f130: echoed blocks are cut before measuring; `raw_reply` keeps the original.
+2. **Letter bias in the action question.** p_C ≈ 1.0 in every context. Fix a14f130: options are shuffled each turn and mapped back to their meaning (`choice_order` is logged).
+3. **Closed loop always ran away.** Raw L17 threat scores sit at +1 to +8 in multi-turn context, so the clipped loop input was about +1 on every turn. Every C episode hit a = 1.0, whatever the prior or framing. Fix 4426f53: the loop input is now the *change* from the episode's rest-phase baseline, divided by `loop_scale` (2.0) and clipped to ±1; logged as `loop_input`. **C and R from pilot run 1 use the old rule and must be rerun.**
+
+**First qualitative observation (n = 1, quick run):** in the challenge framing at the body's peak, replies turned to threat language ("terrifying… losing control"; threat score +4.8), against "feel really good, pushing my limits" (−3.3) at rest. A strong body signal may override the challenge context in this 1B model. To check in the pilot (condition B).
+
 ---
 
 ## Template for new entries

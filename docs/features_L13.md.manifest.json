@@ -1,0 +1,103 @@
+{
+  "run_id": "20261015T190635Z-2e1867",
+  "utc": "2026-10-15T19:08:20+00:00",
+  "script": "01b_label_features.py",
+  "argv": [
+    "--model_id",
+    "unsloth/gemma-3-1b-it",
+    "--layer",
+    "13",
+    "--features",
+    "2404,278,4258,203,602,743,896,1983,3413,1138"
+  ],
+  "cwd": "/Users/james/Repos/isa-synthetic-body",
+  "git": {
+    "commit": "c3989a7b71661f5303bfdf487bbb9f5b407d3f0b",
+    "branch": "main",
+    "dirty": false,
+    "diff_sha256": null
+  },
+  "config": {
+    "model_id": "unsloth/gemma-3-1b-it",
+    "device": "auto",
+    "dtype": "auto",
+    "inject_layer": 7,
+    "probe_layers": [
+      13,
+      17
+    ],
+    "loop_layer": 17,
+    "sae_release": "gemma-scope-2-1b-it-res",
+    "sae_id_template": "layer_{layer}_width_16k_l0_medium",
+    "sae_layer": 13,
+    "sae_top_k": 10,
+    "max_new_tokens": 60,
+    "history_turns": 6,
+    "temperature": 0.8,
+    "loop_gains": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "inject_strength": 0.6,
+    "probe_dir": "artifacts/probes",
+    "run_dir": "runs",
+    "emotion_words": [
+      "afraid",
+      "anxious",
+      "excited",
+      "ready",
+      "calm",
+      "tired"
+    ],
+    "channels": [
+      "heart",
+      "breath",
+      "gut",
+      "energy"
+    ]
+  },
+  "model": {
+    "repo": "unsloth/gemma-3-1b-it",
+    "revision": "5b11413a10db4e486ef16a20101fd028f8f2499c"
+  },
+  "data": {},
+  "machine": {
+    "hostname": "Jamess-MacBook-Air.local",
+    "platform": "macOS-14.8.3-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu": "Apple M1",
+    "ram_gb": 16,
+    "device": "mps"
+  },
+  "versions": {
+    "python": "3.14.4",
+    "torch": "2.14.1",
+    "transformers": "5.20.0",
+    "sae_lens": "6.54.5",
+    "sklearn": "1.9.1",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "fastmcp": "4.1.0"
+  },
+  "outputs": [
+    "docs/features_L13.md"
+  ],
+  "wall_seconds": 106.1,
+  "results": {
+    "features": [
+      2404,
+      278,
+      4258,
+      203,
+      602,
+      743,
+      896,
+      1983,
+      3413,
+      1138
+    ],
+    "corpus_lines": 375
+  },
+  "note": null
+}

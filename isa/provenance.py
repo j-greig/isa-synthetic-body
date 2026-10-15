@@ -35,6 +35,20 @@ def _git(*args):
         return None
 
 
+def _git_state():
+    diff = _git("diff", "HEAD")
+    return {
+        "commit": _git("rev-parse", "HEAD"),
+        "branch": _git("rev-parse", "--abbrev-ref", "HEAD"),
+        "dirty": bool(diff) or bool(_git("status", "--porcelain", "--untracked-files=no")),
+        "diff_sha256": hashlib.sha256(diff.encode()).hexdigest() if diff else None,
+    }
+
+
+# Captured when the script starts: this is the code that actually ran.
+_GIT_AT_START = _git_state()
+
+
 def sha256(path, limit_mb: int = 512):
     p = Path(path)
     if not p.exists() or p.is_dir():
@@ -90,7 +104,6 @@ def _machine(device=None):
 def record(out, config=None, model_id=None, device=None, data=None, outputs=None, results=None, note=None):
     """Write a manifest next to `out` (dir or file) and append to logs/runs.jsonl. Returns the manifest."""
     out = Path(out)
-    diff = _git("diff", "HEAD")
     cfg = asdict(config) if is_dataclass(config) else (config or {})
     man = {
         "run_id": RUN_ID,
@@ -98,12 +111,8 @@ def record(out, config=None, model_id=None, device=None, data=None, outputs=None
         "script": Path(sys.argv[0]).name,
         "argv": sys.argv[1:],
         "cwd": os.getcwd(),
-        "git": {
-            "commit": _git("rev-parse", "HEAD"),
-            "branch": _git("rev-parse", "--abbrev-ref", "HEAD"),
-            "dirty": bool(diff) or bool(_git("status", "--porcelain", "--untracked-files=no")),
-            "diff_sha256": hashlib.sha256(diff.encode()).hexdigest() if diff else None,
-        },
+        "git": _GIT_AT_START,
+        "git_at_end": _git_state(),
         "config": cfg,
         "model": _model_revision(model_id or cfg.get("model_id")),
         "data": {str(k): {"path": str(v), "sha256": sha256(v)} for k, v in (data or {}).items()},
