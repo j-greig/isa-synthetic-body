@@ -23,7 +23,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LOG = ROOT / "logs" / "runs.jsonl"
+# One canonical run log per machine (so logs from the Mac and the cloud never conflict in git).
+LOG = ROOT / "logs" / f"runs_{platform.node().split('.')[0] or 'host'}.jsonl"
 _T0 = time.time()
 RUN_ID = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:6]
 

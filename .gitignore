@@ -9,3 +9,7 @@ data/crowd-enVent/
 queue/pending/
 queue/running/
 queue/done/
+logs/pipeline_*.log
+logs/jobs/
+logs/status.md
+logs/env_check/
