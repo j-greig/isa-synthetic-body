@@ -33,6 +33,8 @@ class Config:
 
     # Activation body: steering strength as a multiple of the typical activation norm
     inject_strength: float = 0.6
+    # Beyond-tokens runs (isa/embodied.py): arithmetic breaks far earlier than prose, so a gentler scale.
+    embodied_strength: float = 0.04  # calibrated 2026-10-15: 0.05 keeps ~70-80% accuracy at peak, 0.1 breaks it
 
     # Paths
     probe_dir: str = "artifacts/probes"

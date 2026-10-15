@@ -141,6 +141,31 @@ class LM:
         return {L: st[L][0, n:].float().cpu() for L in layers}
 
     @torch.no_grad()
+    def pre_state(self, messages, layers):
+        """One forward pass over the prompt (with the generation prompt). Returns
+        (hidden at the last prompt position {layer: [d]}, surprisal of the last user message).
+
+        Surprisal = mean negative log-likelihood (nats/token) of the last message's tokens:
+        the model's own prediction error for its input, a signal it never sees as text."""
+        ids = self.chat_ids(messages)
+        with self.capture(layers) as st:
+            logits = self.model(ids).logits[0].float()
+        pre = {L: st[L][0, -1].float().cpu() for L in layers}
+        content = self.tok(messages[-1]["content"], add_special_tokens=False)["input_ids"]
+        seq, n = ids[0].tolist(), len(content)
+        start = None
+        for i in range(len(seq) - n, max(-1, len(seq) - n - 40), -1):
+            if seq[i:i + n] == content:
+                start = i
+                break
+        if start is None or start == 0 or n == 0:
+            return pre, float("nan")
+        lp = torch.log_softmax(logits[start - 1:start + n - 1], -1)
+        tgt = torch.tensor(content, device=lp.device)
+        nll = -lp.gather(1, tgt[:, None]).squeeze(1)
+        return pre, float(nll.mean())
+
+    @torch.no_grad()
     def next_token_logprobs(self, messages, words):
         """Log-probability that the model's answer starts with each word."""
         ids = self.chat_ids(messages)
