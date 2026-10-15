@@ -6,7 +6,7 @@ The canonical record of what was done, where, with what, and what came out.
 
 - One entry per session or decision, newest at the bottom. Times are UTC.
 - Every entry names: **where** it ran (machine), **git commit**, **commands**, **inputs and sources** (with URLs, revisions and checksums), **outputs**, **results**, **decisions**.
-- From commit `PROVENANCE` (2026-10-15) onwards, every script also writes a machine-readable manifest. It goes next to its output (`manifest.json` or `<file>.manifest.json`) and is appended to `logs/runs.jsonl`. Entries here cite `run_id`s from that log.
+- From commit `b8fde4a` (2026-10-15) onwards, every script also writes a machine-readable manifest. It goes next to its output (`manifest.json` or `<file>.manifest.json`) and is appended to `logs/runs.jsonl`. Entries here cite `run_id`s from that log.
 - Results from machines whose artefacts aren't in the repo are marked **(not reproducible from repo artefacts; rerun to reproduce)**.
 
 ---
