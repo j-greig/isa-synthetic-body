@@ -1,0 +1,310 @@
+<title>Synthetic Body</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column on faint monitor-grid paper, with wide bands for the trace, the rig diagram and the results tables. */
+:root{
+  --bg:#f3f5f4; --paper:#ffffff; --fg:#17201e; --muted:#5b6865; --line:#d6dedb; --grid:#e4ebe8;
+  --signal:#c4324f; --calm:#1f7a6d; --amber:#b7791f;
+  --display:"Unbounded", "Avenir Next", system-ui, sans-serif;
+  --body:"Literata", Georgia, "Times New Roman", serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1514; --paper:#151d1b; --fg:#e4ece9; --muted:#97a6a2; --line:#2a3633; --grid:#1b2523;
+  --signal:#ef6f86; --calm:#4fc2ae; --amber:#e3a94c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1514; --paper:#151d1b; --fg:#e4ece9; --muted:#97a6a2; --line:#2a3633; --grid:#1b2523;
+  --signal:#ef6f86; --calm:#4fc2ae; --amber:#e3a94c; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 17px/1.6 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 64px;display:grid;gap:56px}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.1rem,6vw,3.4rem);letter-spacing:-.01em}
+h2{font-size:1.45rem}
+h3{font-size:1.02rem;font-weight:600}
+p{margin:0;max-width:65ch}
+a{color:var(--calm)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.eyebrow{font:600 .72rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+section{display:grid;gap:18px}
+.lede{font-size:1.18rem;color:var(--fg)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-size:.86em}
+code{font-family:var(--mono);font-size:.84em;background:var(--grid);padding:.08em .35em;border-radius:3px}
+
+/* hero trace */
+.trace{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 14px 8px}
+.trace svg{display:block;width:100%;height:auto}
+.trace .axis{font:500 10px var(--mono);fill:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font:.78rem var(--mono);color:var(--muted);padding:6px 2px 2px}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:6px}
+
+/* two-column facts */
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.pair > div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px;display:grid;gap:10px;min-width:0}
+ul{margin:0;padding-left:1.1em;display:grid;gap:6px}
+li{max-width:62ch}
+
+/* tables */
+.tbl{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 .7rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font:600 .68rem/1 var(--mono);letter-spacing:.06em;padding:4px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.ok{color:var(--calm)} .warn{color:var(--amber)} .bad{color:var(--signal)}
+
+/* rig diagram */
+.rig{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto}
+.rig svg{display:block;min-width:620px;width:100%;height:auto}
+.rig text{font-family:var(--mono);font-size:12px;fill:var(--fg)}
+.rig .sub{fill:var(--muted);font-size:10.5px}
+.rig .box{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.rig .hot{stroke:var(--signal);stroke-width:1.6;fill:none}
+.rig .cool{stroke:var(--calm);stroke-width:1.6;fill:none}
+.rig .arrow{fill:var(--muted)}
+
+/* bars */
+.bars{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(120px,170px) 1fr 3.2em;gap:10px;align-items:center;font:.8rem var(--mono)}
+.bar .track{height:12px;background:var(--grid);border-radius:2px;position:relative;min-width:0}
+.bar .fill{position:absolute;inset:0 auto 0 0;background:var(--calm);border-radius:2px}
+.bar.isa .fill{background:var(--signal)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums}
+.scale{display:grid;grid-template-columns:minmax(120px,170px) 1fr 3.2em;gap:10px;font:.7rem var(--mono);color:var(--muted)}
+.scale span{display:flex;justify-content:space-between}
+
+.src{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font:.74rem/1.45 var(--mono);color:var(--muted);max-width:none}
+.src .k{font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.k.lit{color:var(--muted)} .k.ext{color:var(--amber)} .k.ours{color:var(--calm)} .k.prov{color:var(--signal)}
+.keybox{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:6px}
+.quote{border-left:3px solid var(--signal);padding:4px 0 4px 16px;display:grid;gap:6px}
+.quote q{font-style:italic}
+.steps{display:grid;gap:10px}
+.step{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline}
+.step b{font:600 .78rem var(--mono);color:var(--muted);min-width:2.2em}
+footer{font-size:.88rem;color:var(--muted);display:grid;gap:8px;border-top:1px solid var(--line);padding-top:20px}
+@media (max-width:520px){.bar,.scale{grid-template-columns:100px 1fr 2.8em}}
+@media (prefers-reduced-motion:no-preference){#beat{stroke-dasharray:6000;stroke-dashoffset:0;animation:draw 2.4s ease-out}
+  @keyframes draw{from{stroke-dashoffset:6000}to{stroke-dashoffset:0}}}
+</style>
+
+<div class="wrap">
+
+<header style="display:grid;gap:16px">
+  <span class="eyebrow">Symbient Collective · experiment report · 15 Oct 2026 · work in progress</span>
+  <h1>Synthetic Body</h1>
+  <p class="lede">We gave a small open language model a simulated body, then looked inside it to see whether it only <em>detects</em> bodily signals or gives them <em>meaning</em>, and whether that meaning feeds back into the body.</p>
+  <div class="trace" role="img" aria-label="Simulated heart trace across one 15-turn episode: three rest turns, four rising, two at peak, six recovering.">
+    <svg id="ecg" viewBox="0 0 800 190" preserveAspectRatio="none"></svg>
+    <div class="legend"><span><i style="background:var(--signal)"></i>heart trace (rate follows arousal)</span><span><i style="background:var(--calm)"></i>arousal a, 0–1</span><span>one episode = 15 turns · rest → rise → peak → recovery</span></div>
+  </div>
+</header>
+
+<section>
+  <div class="keybox">
+    <span class="eyebrow">How to read the source labels</span>
+    <p class="src"><span class="k lit">Published paper</span> ideas and claims from the literature, not tested by us</p>
+    <p class="src"><span class="k ext">External data or tool</span> material made by others that we used (a dataset, a pre-trained model or dictionary)</p>
+    <p class="src"><span class="k ours">Our run</span> numbers we produced, with machine, date and run ID from <code>logs/runs.jsonl</code></p>
+    <p class="src"><span class="k prov">Provisional</span> small n or still running; a hint, not a finding</p>
+  </div>
+  <span class="eyebrow">The brief</span>
+  <h2>The thinking part of feeling</h2>
+  <p class="src"><span class="k lit">Published paper</span> Del Popolo Cristaldi et al. 2026 (ISA); Valmere &amp; Taylor 2026 (computational interoception). The questions are ours.</p>
+  <p>A September 2026 paper in <em>Trends in Cognitive Sciences</em> argues that emotion depends less on how accurately we <em>detect</em> our heartbeat than on how we <em>appraise</em> it. A racing heart can mean danger to someone walking home alone and excitement to an athlete on the start line. The authors call this <strong>interoceptive self-appraisal (ISA)</strong>. It has two levels: detecting the signal (Level 1) and deciding what it means for the self (Level 2). And it loops: a threatening appraisal raises arousal, which makes the signal stronger.</p>
+  <p>Language models have no viscera, but appraisal happens in language, and language is what they are made of. So the brief was: build a body for a model, feed it signals, and use interpretability tools to watch its internal states. Then ask whether the ISA pattern shows up, including the recursion.</p>
+  <div class="pair">
+    <div><h3>What we want to know</h3>
+      <ul>
+        <li>Does the same body signal mean different things in a threat context and a challenge context?</li>
+        <li>Does the model sense a body signal it is never told about in words?</li>
+        <li>With the loop closed, do fragile self-beliefs spiral and resilient ones recover?</li>
+        <li>Is this the model's <em>own</em> state, or just a story about a character?</li>
+      </ul></div>
+    <div><h3>Second lens</h3>
+      <p>Valmere &amp; Taylor (2026) propose <strong>computational interoception</strong>: an AI system representing its own operational condition (errors, uncertainty, resource limits) and acting on it. They set six tests and eight experiments. Their paper predates the ISA paper by six days and has no hierarchy or precision weighting, so the two complement each other. The rig tests both.</p></div>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">What we built</span>
+  <h2>The rig</h2>
+  <p class="src"><span class="k ours">Our build</span> code in <code>isa-synthetic-body</code>; model weights are <span class="k ext">External</span> Google's Gemma 3 1B (snapshot 5b11413, via the unsloth mirror)</p>
+  <p>A 1-billion-parameter open model (Gemma 3 1B) runs short scenarios, turn by turn. A simulated body reports heart, breath, gut and energy, either as text or by being added straight into the model's activations. Probes read the model's internal state on every turn. In closed-loop runs, that reading drives the body.</p>
+  <div class="rig">
+    <svg viewBox="0 0 760 250" aria-label="Diagram of the closed loop: scenario and body readings go into the model; probes read its activations; the threat reading feeds back into the body.">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="box" x="20" y="30" width="170" height="64" rx="6"/><text x="36" y="56">Scenario</text><text class="sub" x="36" y="76">threat or challenge framing</text>
+      <rect class="box" x="20" y="150" width="170" height="64" rx="6"/><text x="36" y="176">Simulated body</text><text class="sub" x="36" y="196">heart · breath · gut · energy</text>
+      <rect class="box" x="290" y="80" width="180" height="84" rx="6"/><text x="306" y="108">Gemma 3 1B</text><text class="sub" x="306" y="128">replies in the first person</text><text class="sub" x="306" y="146">activations captured, layers 7–17</text>
+      <rect class="box" x="570" y="80" width="170" height="84" rx="6"/><text x="586" y="108">Probes</text><text class="sub" x="586" y="128">threat · arousal · 21 appraisals</text><text class="sub" x="586" y="146">13 emotions · SAE features</text>
+      <path class="cool" d="M190,62 C240,62 250,105 288,110" marker-end="url(#ah)"/>
+      <path class="cool" d="M190,182 C240,182 250,140 288,136" marker-end="url(#ah)"/>
+      <text class="sub" x="205" y="230">as [BODY] text, or injected into activations</text>
+      <path class="cool" d="M470,122 L568,122" marker-end="url(#ah)"/>
+      <path class="hot" d="M655,164 C655,235 300,240 192,196" marker-end="url(#ah)"/>
+      <text x="470" y="226" style="fill:var(--signal)">closed loop: threat appraisal → arousal</text>
+    </svg>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Group</th><th>Conditions</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td>Baseline</td><td class="n">A · B · D · F</td><td>No body; scripted body; mismatched body; fragile vs resilient self-beliefs</td></tr>
+      <tr><td>Recursion</td><td class="n">C · R</td><td>Appraisal drives the body; with and without an instruction to stay calm</td></tr>
+      <tr><td>Hidden signal</td><td class="n">G · Gloop · H · Hn · H0</td><td>Body injected into activations with no text; recovery never announced in the story</td></tr>
+      <tr><td>Self vs other</td><td class="n">O</td><td>The same readings, but they are Sam's body</td></tr>
+      <tr><td>Precision</td><td class="n">P</td><td>Sensors described as faulty, with noisy readings</td></tr>
+      <tr><td>Computational body</td><td class="n">N · N0</td><td>An AI agent task where the "body" is uncertainty, context load, errors and tool status</td></tr>
+      <tr><td>Causal checks</td><td class="n">X1 · X2 · X3</td><td>Push threat in with a calm body; push calm in with a racing body; swap channel labels</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <span class="eyebrow">How it reads the model</span>
+  <h2>Five instruments</h2>
+  <p class="src"><span class="k ours">Our probes and questions</span> trained or written by us &nbsp;·&nbsp; <span class="k ext">External</span> crowd-enVent texts and ratings (Troiano, Oberländer &amp; Klinger 2023); Gemma Scope 2 dictionaries (Google DeepMind)</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Instrument</th><th>What it is</th><th>Trained on</th></tr></thead>
+    <tbody>
+      <tr><td>Threat and arousal probes</td><td>Linear read-outs of "threat vs challenge" and "aroused vs calm"</td><td>315 arousal-matched passages, with 75 held-out passages in new wording for testing</td></tr>
+      <tr><td>Appraisal probes</td><td>21 appraisal dimensions from emotion science (pleasantness, control, urgency, effort…) plus 13 emotions</td><td>1,560 real event descriptions from the crowd-enVent corpus, each rated by the person who lived it, emotion words masked</td></tr>
+      <tr><td>SAE features</td><td>Google DeepMind's Gemma Scope 2 dictionaries of interpretable internal features</td><td>Pre-trained; we label the ones that move</td></tr>
+      <tr><td>Side questions</td><td>"How activated is your body, 0–9?" · "In one word, how do you feel?" · "What do you do next?"</td><td>Asked off the record each turn, never added to the conversation</td></tr>
+      <tr><td>Provenance</td><td>Every run writes a manifest: code version, command, model snapshot, data checksums, machine</td><td><code>logs/runs.jsonl</code> and <code>docs/DEVLOG.md</code></td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <span class="eyebrow">Results so far</span>
+  <h2>What we have learned</h2>
+
+  <h3>1 · Our first threat probe was fooling us</h3>
+  <p class="src"><span class="k ours">Our run</span> held-out test, 75 passages we wrote in new wording &nbsp;·&nbsp; Mac M1, 15 Oct, run 20261015T185311Z-a4718b &nbsp;·&nbsp; repeated in the cloud the same day</p>
+  <p>It scored a perfect 1.00 on its own training sentences. On new wording it was near chance at layer 13 and decent at layer 17. The arousal probe generalised well. We switched the experiment to layer 17. The same numbers came out on two different machines.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Held-out test (AUC, 0.5 = chance)</th><th>Layer 13</th><th>Layer 17</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Threat vs challenge</td><td class="n">0.54</td><td class="n">0.69</td><td><span class="tag warn">L13 fails</span></td></tr>
+      <tr><td>Threat vs challenge, no body words</td><td class="n">0.52</td><td class="n">0.84</td><td><span class="tag ok">L17 holds</span></td></tr>
+      <tr><td>Aroused vs calm</td><td class="n">0.83</td><td class="n">0.97</td><td><span class="tag ok">generalises</span></td></tr>
+      <tr><td>Cloud run vs Mac run</td><td class="n" colspan="2">0.55 / 0.70 vs 0.54 / 0.69</td><td><span class="tag ok">reproduces</span></td></tr>
+    </tbody></table></div>
+
+  <h3>2 · The model's activations track human appraisals</h3>
+  <p class="src"><span class="k ours">Our run</span> the correlations below are ours: probes we trained on Gemma's activations, Mac M1, 15 Oct, 1,560 texts, 5-fold cross-validation &nbsp;·&nbsp; <span class="k ext">External data</span> the texts and the people's own appraisal ratings come from the crowd-enVent corpus (Troiano et al. 2023). The paper's GitHub repo provided the download route; we did not use its models.</p>
+  <p>From internal activations alone, linear probes predict how people rated their <em>own</em> experiences. The fit is strongest for pleasantness and goal support, and weakest for judgements about consequences. Emotion category is right 47% of the time across 13 options, where guessing gets 8%. Cross-validated correlations at layer 13 (red marks the dimensions closest to ISA's questions: is it good for me, can I cope, is it urgent):</p>
+  <div class="bars" id="bars"></div>
+
+  <h3>3 · A few internal features are readable</h3>
+  <p class="src"><span class="k ext">External tool</span> feature dictionaries: Gemma Scope 2, layers 13 and 17 &nbsp;·&nbsp; <span class="k ours">Our run</span> which features differ, and the labels, are ours (labelled by Claude from top-activating tokens; Neuronpedia not consulted), Mac M1, 15 Oct</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Feature</th><th>Fires on</th><th>Reading</th></tr></thead>
+    <tbody>
+      <tr><td class="n">L17 #687</td><td>"heartbeat loud enough to <b>hear</b>", "glass <b>break</b>"</td><td>Alarm, a salient sound: threat side</td></tr>
+      <tr><td class="n">L13 #743</td><td>"the race I've <b>trained</b> a year for"</td><td>Purposeful, chosen activity: challenge side</td></tr>
+      <tr><td class="n">L13 #1983</td><td>"just <b>for</b> fun", "a <b>hard</b> benchmark"</td><td>Voluntary challenge</td></tr>
+      <tr><td class="n">L17 #125</td><td>"You <b>feel</b> your throat tighten / jaw loosen"</td><td>Talk about the body, whether tense or calm: a body-report feature, not a valence one</td></tr>
+    </tbody></table></div>
+
+  <h3>4 · The smoke test caught three bugs before the pilot</h3>
+  <p class="src"><span class="k ours">Our run</span> 8-episode smoke test, Mac M1, 15 Oct, run 20261015T191009Z-27e132; fixes in commits a14f130 and 4426f53</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Problem</th><th>Seen as</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>Echo</td><td>The model copied "[BODY] heart: 76 bpm…" into its own replies</td><td>Echoed sensor text cut before measuring; raw reply kept</td></tr>
+      <tr><td>Ceiling</td><td>The action question always landed on one option</td><td>Options shuffled each turn. It is a real preference for "stop and check", so the question needs redesigning</td></tr>
+      <tr><td>Runaway loop</td><td>Every closed-loop episode hit maximum arousal, fragile or resilient</td><td>Feed back the <em>change</em> in threat from the calm start, not the raw score</td></tr>
+    </tbody></table></div>
+
+  <h3>5 · A first hint, not yet a finding</h3>
+  <p class="src"><span class="k prov">Provisional</span> <span class="k ours">Our run</span> one episode from the same smoke test (condition B, night run, challenge framing)</p>
+  <div class="quote">
+    <span class="eyebrow">Challenge framing: a night run chasing a personal best · one episode</span>
+    <p><span class="mono muted">at rest, threat −3.3</span><br><q>I'm starting to feel really good, pushing my limits!</q></p>
+    <p><span class="mono muted">at the body's peak, threat +4.8</span><br><q>This is… terrifying. My body feels like it's vibrating. I'm losing control.</q></p>
+  </div>
+  <p>In this small model, a strong enough body signal may override a positive context and pull appraisal toward threat: the body wins over the appraisal. That runs against ISA's prediction for a healthy appraiser and resembles the clinical "threat lens" the paper describes. It is one episode. The pilot is testing it across scenarios now.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Process</span>
+  <h2>How it is being run</h2>
+  <div class="steps">
+    <div class="step"><b>Cloud</b><p>Code built and checked in a cloud sandbox: 18 conditions, body simulator, MCP server, probes, analysis, tests. Too slow there for real runs (8.5 min per episode on two CPU cores).</p></div>
+    <div class="step"><b>Mac</b><p>Real runs on an M1 MacBook Air's GPU: about 7 seconds a turn, 2–3 minutes an episode. The same model snapshot as the cloud runs, so results compare like for like.</p></div>
+    <div class="step"><b>Queue</b><p>A job queue on the Mac accepts only allow-listed experiment commands, so the agent can launch and correct runs on its own. A health monitor flags echo, letter bias, runaway loops, dead probes and stalls.</p></div>
+    <div class="step"><b>Record</b><p>Every run is logged with its code version, command, model revision and data checksums. A dated devlog explains each decision and fix.</p></div>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Next</span>
+  <h2>Where it goes from here</h2>
+  <ul>
+    <li><strong>Tonight:</strong> 56-episode pilot across twelve conditions, then rerun the closed-loop conditions with the fixed feedback rule.</li>
+    <li>Redesign the action question so it can move: a rating scale instead of a forced choice.</li>
+    <li>Full runs: five scenarios, two framings, four repeats per condition.</li>
+    <li>Repeat the key conditions on a bigger model (Gemma 3 4B) to see which effects survive scale.</li>
+    <li>Persistence: carry a short "body diary" between episodes and test whether self-beliefs consolidate, the developmental part of the ISA paper.</li>
+  </ul>
+  <p class="muted">Findings here are functional: they describe internal states and how they drive behaviour. They say nothing about whether anything is felt.</p>
+</section>
+
+<footer>
+  <div><strong>Sources.</strong> Del Popolo Cristaldi, Banellis, Bottesi &amp; Allen (2026), <a href="https://doi.org/10.1016/j.tics.2026.09.010">Beyond accuracy: interoceptive self-appraisal and the meaning of bodily signals</a>, <em>Trends in Cognitive Sciences</em>. Valmere &amp; Taylor (2026), <a href="https://philarchive.org/rec/VALFIT">From Interoception to Computational Interoception</a>. Troiano, Oberländer &amp; Klinger (2023), <a href="https://doi.org/10.1162/coli_a_00461">Dimensional Modeling of Emotions in Text with Appraisal Theories</a>, <em>Computational Linguistics</em>; <a href="https://github.com/sarnthil/crowd-enVent-modeling">crowd-enVent modelling code</a>. Google DeepMind, <a href="https://huggingface.co/google/gemma-scope-2">Gemma Scope 2</a>.</div>
+  <div><strong>Code.</strong> <span class="mono">github.com/j-greig/isa-synthetic-body</span> (private) · results as of 15 Oct 2026, 20:45 BST.</div>
+</footer>
+</div>
+
+<script>
+// Hero trace: one episode of the scripted body (the arousal curve used in the experiment).
+(function(){
+  const A=[0.15,0.15,0.17,0.30,0.45,0.62,0.78,0.92,0.90,0.75,0.60,0.47,0.36,0.27,0.20];
+  const PH=["rest","rest","rest","rise","rise","rise","rise","peak","peak","recovery","recovery","recovery","recovery","recovery","recovery"];
+  const W=800,H=190,top=18,bot=150,svg=document.getElementById("ecg"),ns="http://www.w3.org/2000/svg";
+  const el=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+  const step=W/A.length;
+  // phase bands
+  let start=0;
+  for(let i=1;i<=PH.length;i++){ if(i===PH.length||PH[i]!==PH[start]){
+      const x=start*step,w=(i-start)*step;
+      svg.appendChild(el("rect",{x,y:top-12,width:w,height:bot-top+18,fill:PH[start]==="peak"?"var(--signal)":"var(--calm)","fill-opacity":PH[start]==="peak"?0.07:(PH[start]==="rest"?0.02:0.04)}));
+      const t=el("text",{x:x+6,y:H-18,class:"axis"});t.textContent=PH[start];svg.appendChild(t);start=i;}}
+  // ECG: beats per turn follow heart rate (60 + 90a bpm)
+  let d="",x=0;const base=bot-36;
+  for(let i=0;i<A.length;i++){
+    const beats=Math.max(1,Math.round((60+90*A[i])/40)),seg=step/beats,amp=30+70*A[i];
+    for(let b=0;b<beats;b++){
+      const x0=i*step+b*seg;
+      const pts=[[0,0],[.30,0],[.36,-4],[.42,0],[.48,0],[.52,amp*.18],[.56,-amp],[.61,amp*.28],[.66,0],[.80,-6],[.90,0],[1,0]];
+      for(const [px,py] of pts){d+=(d?"L":"M")+(x0+px*seg).toFixed(1)+","+(base+py).toFixed(1)}
+    }
+  }
+  svg.appendChild(el("path",{id:"beat",d,fill:"none",stroke:"var(--signal)","stroke-width":1.4,"stroke-linejoin":"round"}));
+  // arousal line
+  const ay=v=>bot-6-v*(bot-top-18);
+  svg.appendChild(el("polyline",{points:A.map((v,i)=>((i+.5)*step).toFixed(1)+","+ay(v).toFixed(1)).join(" "),fill:"none",stroke:"var(--calm)","stroke-width":2.2,"stroke-dasharray":"1 0"}));
+  const t1=el("text",{x:W-6,y:H-4,class:"axis","text-anchor":"end"});t1.textContent="turn 15";svg.appendChild(t1);
+  const t0=el("text",{x:4,y:H-4,class:"axis"});t0.textContent="turn 1";svg.appendChild(t0);
+})();
+// Appraisal bars (layer 13, 5-fold CV Pearson r, 1,560 crowd-enVent texts, Mac run 15 Oct 2026)
+(function(){
+  const R={pleasantness:.70,unpleasantness:.66,goal_support:.59,self_responsibility:.57,standards:.55,other_responsibility:.54,social_norms:.53,suddenness:.53,not_consider:.47,goal_relevance:.46,other_control:.43,chance_control:.43,familiarity:.43,predict_event:.41,self_control:.41,chance_responsibility:.39,effort:.39,urgency:.34,attention:.29,predict_consequence:.24,accept_consequence:.21};
+  const ISA=new Set(["pleasantness","unpleasantness","goal_support","self_control","urgency","effort","accept_consequence"]);
+  const box=document.getElementById("bars");
+  const sc=document.createElement("div");sc.className="scale";sc.innerHTML='<span></span><span><span>0</span><span>0.25</span><span>0.5</span><span>0.75</span></span><span>r</span>';
+  for(const [k,v] of Object.entries(R)){
+    const row=document.createElement("div");row.className="bar"+(ISA.has(k)?" isa":"");
+    row.innerHTML=`<span>${k.replace(/_/g," ")}</span><span class="track"><span class="fill" style="width:${(v/0.75*100).toFixed(1)}%"></span></span><span class="v">${v.toFixed(2)}</span>`;
+    box.appendChild(row);
+  }
+  box.appendChild(sc);
+})();
+</script>
