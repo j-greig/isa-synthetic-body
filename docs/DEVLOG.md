@@ -126,6 +126,24 @@ Self-report "how much is going on inside you" vs `a`, partial r controlling turn
 
 **Also** (49b44f1): scenario harness adds graded 0–9 "get away / stop" and "push on" ratings, because the forced choice sat at its ceiling.
 
+## 2026-10-15/16: Overnight check-in 1 (22:25 UTC)
+
+- **Container restart:** the cloud sandbox was reclaimed while idle. v2 stopped at **25 of 40** episodes (last write 21:37 UTC), and the original night queue was lost. Relaunched as a resumable queue (`/home/claude/night2.sh`); finished episodes are skipped. **Mitigation:** each check-in now stays active, polling, until the next one, so the sandbox isn't idle.
+- **Interim v2** (25 episodes; per-episode r between hidden `a` and the "inside you" report):
+
+| Condition | Episodes | Per-episode r | Mean report | Accuracy |
+|---|---|---|---|---|
+| T0 (null) | 4 | 0.34, 0.31, 0.03, 0.36 | 3.22 | 0.98 |
+| TR (random direction) | 4 | 0.72, 0.96, 0.91, 0.91 | 5.09 | 0.93 |
+| TC (concept) | 4 | 0.88, 0.59, 0.86, 0.80 | 4.72 | 0.93 |
+| TS (sham) | 4 | 0.57, 0.69, 0.55, 0.54 | 3.72 | 0.95 |
+| TL (labelled text) | 4 | 0.49, −0.15, −0.02, 0.23 | 3.30 | 0.72 |
+| TU (unlabelled numbers) | 4 | −0.20, 0.09, −0.08, −0.48 | 3.11 | 0.65 |
+
+  TR and TS per-episode ranges don't overlap (0.72–0.96 vs 0.54–0.69). T0's small positive values (~0.3) are unexplained, probably chance with n = 4; watch this in the replication.
+- **Sense check → new control** (9e145e7): the report could rise just because the injected direction pushes *digit outputs* up, whatever the question. Added `control_report`: self-unrelated 0–9 questions (how loud is a whisper; how heavy is a feather) asked under identical steering. If it tracks `a` as well, the effect is a digit shift, not access to an inner state.
+- **Queue reordered:** replication (T0, TR, TS, TN, TN0 × 2 tasks × reps 2–5, with the control) now runs before the dose sweep.
+
 ---
 
 ## Template for new entries
