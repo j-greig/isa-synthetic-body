@@ -11,6 +11,14 @@ Built to test **interoceptive self-appraisal (ISA)** (Del Popolo Cristaldi et al
 
 Full plan with tick-off phases: [`docs/SPEC.md`](docs/SPEC.md).
 
+## One-shot run on a Mac
+
+```bash
+caffeinate -i bash scripts/run_mac.sh   # all phases; log in logs/pipeline_<UTC>.log, provenance in logs/runs.jsonl
+```
+
+See `docs/DEVLOG.md` for what has been run, where, and with what.
+
 ## Quick start (Mac, 8 GB is enough)
 
 ```bash
