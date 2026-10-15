@@ -215,6 +215,10 @@ class Runner:
             sae_top = self.sae.top(hid[cfg.sae_layer], cfg.sae_top_k) if self.sae else None
 
             history.append({"role": "assistant", "content": reply})
+            if cfg.history_turns:
+                keep = 2 * cfg.history_turns
+                if len(history) - 1 > keep:
+                    history = history[:1] + history[-keep:]
             rows.append({
                 "episode": _episode_id(c, scen, framing, prior, gain, rep),
                 "condition": c.name, "scenario": scen, "framing": framing, "prior": prior,
