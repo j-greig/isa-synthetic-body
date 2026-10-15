@@ -8,6 +8,7 @@ Examples
   python scripts/04_run.py --conditions X1,X2,X3          # causal checks
   python scripts/04_run.py --conditions O,P,R              # self vs other, precision, regulation
   python scripts/04_run.py --conditions N,N0               # computational body (agent scenarios)
+  python scripts/04_run.py --conditions H,Hn,H0            # hidden telemetry, unannounced repair
   python scripts/04_run.py --conditions B --pull --name pull  # model chooses when to check its body
 """
 import sys

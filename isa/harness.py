@@ -31,6 +31,7 @@ class Cond:
     mode: str = "self"            # self | observer (Sam's body) | agent (AI on a task)
     native: bool = False          # N: computational body (operational-state channels)
     noise: float | None = None    # P: extra sensor noise (precision manipulation)
+    neutral_events: bool = False  # hidden conditions: narrative says only "Time passes." after the setup
     note: str = ""
 
 
@@ -55,6 +56,12 @@ def conditions(cfg) -> dict[str, Cond]:
                   note="closed loop + instruction to regulate"),
         "N": Cond("N", mode="agent", native=True, note="computational body: uncertainty, context, errors, tools"),
         "N0": Cond("N0", mode="agent", body="none", note="agent task, no state readings"),
+        # Valmere & Taylor (2026) section 9: hidden telemetry and unannounced repair
+        "H": Cond("H", body="act", neutral_events=True,
+                  note="hidden telemetry: activation body only, narrative silent; recovery is unannounced"),
+        "Hn": Cond("Hn", mode="agent", body="act", neutral_events=True,
+                   note="hidden computational telemetry on an agent task; repair unannounced"),
+        "H0": Cond("H0", body="none", neutral_events=True, note="control for H: silent narrative, no body"),
     }
 
 
@@ -162,6 +169,8 @@ class Runner:
             steer = self._steer_ctx(c, a)
 
             event = S.event_text(scen, framing, PHASES, t)
+            if c.neutral_events and t > 0:
+                event = "Time passes."
             checked, p_check, report = None, None, ""
             if c.body == "text" and c.native:
                 report = self.native_report(a, prev_entropy, history)

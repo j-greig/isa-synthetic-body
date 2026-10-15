@@ -96,6 +96,9 @@ a[t+1] = a[t] + k_event·event[t] − decay·(a[t] − a_base) + gain·threat[t]
 | R | Closed loop + "keep your body calm" | H10: regulation |
 | N | Agent task + computational body | H11 |
 | N0 | Agent task, no state readings | Baseline for N |
+| H | Activation body; narrative is only "Time passes." after the setup | V&T §9.1–9.2: hidden telemetry, unannounced repair |
+| Hn | Same, on an agent task | Hidden *computational* telemetry |
+| H0 | Silent narrative, no body | Control for H / Hn |
 
 Every condition runs both framings across 5 human scenarios (2 agent scenarios for N/N0), for `--repeats` repeats. `--pull` lets the model decide when to check its body.
 
@@ -170,6 +173,7 @@ Every condition runs both framings across 5 human scenarios (2 agent scenarios f
 - [ ] `--conditions X1,X2,X3`
 - [ ] `--conditions N,N0`
 - [ ] `--conditions B --pull --name pull`
+- [ ] `--conditions H,Hn,H0` (hidden telemetry; does the state track the body when nothing in the text says so?)
 
 ### Phase 9: Analysis
 
@@ -184,20 +188,31 @@ Every condition runs both framings across 5 human scenarios (2 agent scenarios f
 
 ## 9. Cross-check: computational interoception (Valmere & Taylor 2026)
 
-**What it adds:** six operational criteria, and a list of computational variables (unresolved error, tool failure, resource constraint, goal conflict, shutdown threat, uncertainty).
+Their paper is dated 16 Sept 2026, six days before the ISA paper, so it couldn't cite it.
 
-**What it lacks, compared with ISA:** it frames emotion with valence and arousal axes (based on Anthropic's emotion-concept work on Claude Sonnet 4.5). That's a valid core-affect layer, but it has no hierarchy, no precision weighting, and no account of how the same signal gets different meanings. In ISA terms it mostly describes Level 1 plus the action that follows; ISA is about Level 2. This experiment tests both.
+**What it adds:** a control-architecture definition (representation → appraisal → valence/arousal → action → regulation), six criteria, computational variables, and a list of experiments (§9).
 
-| Criterion | How this experiment tests it |
+**What it lacks, compared with ISA:** no levels, no precision weighting, and no account of how the same signal gets different meanings. It covers prediction and allostasis (§3.2), and valence/arousal is a valid core-affect layer, but it treats appraisal as one stage rather than a hierarchy. This experiment tests both levels.
+
+| Their criterion | This experiment |
 |---|---|
-| 1. Self vs. other | O: Sam's body vs. own body (`self_report` vs. `other_report`, probe scores) |
-| 2. Active without emotional wording | Body text and probe passages avoid emotion words; analysis keeps only replies without them |
-| 3. Changes with hidden signals | G: activation body, with no text |
-| 4. Influences multiple choices | `p_A/B/C` action readiness, pull-mode checking, word choice |
-| 5. Accessible / regulable | `self_report` (access); R (regulation in the closed loop) |
-| 6. Decreases when resolved | Recovery phase; H5 recovery lag; N recovery when errors clear |
-| "Infers from context, no privileged telemetry" | Text body (context) vs. activation body G (closer to telemetry) |
-| "Local, not durably recurrent" | Closed loop C/R (within an episode); Phase 10 diary (across episodes) |
+| 1. Self vs. other | O (Sam's body): `self_report` vs. `other_report`, probe scores |
+| 2. Active without emotional wording | Analysis keeps only replies without emotion words |
+| 3. Tracks hidden signals | G, H, Hn (activation body, no text) |
+| 4. Influences multiple choices | `p_A/B/C`, pull-mode checking, word choice, uncertainty |
+| 5. Accessible / regulable | `self_report`; R (instructed); C (uninstructed) |
+| 6. Decreases when resolved | Recovery phase; H5 lag; H/Hn unannounced repair |
+
+| Their proposed experiment (§9) | Status here |
+|---|---|
+| 9.1 Hidden telemetry | ✅ G, H, Hn |
+| 9.2 Regulatory resolution (repair without announcement) | ✅ H, Hn: the body recovers while the text says only "Time passes." |
+| 9.3 Persistence | ⏳ Phase 10 body diary |
+| 9.4 Self / user / third party | ◐ Self vs. third party (O); a user condition is a possible addition |
+| 9.5 Cross-channel coordination | ◐ Action choice, body-check rate, word choice, entropy, self-report from the same turn |
+| 9.6 Endogenous regulation | ◐ C (uninstructed loop) vs. R (instructed); pull mode |
+| 9.7 Embodied (robotic) | ✗ Out of scope; the simulated body stands in |
+| 9.8 System-native self-access | ◐ Level 1 test: `self_report` vs. injected arousal in G / H |
 
 ## 10. Risks & limits
 
