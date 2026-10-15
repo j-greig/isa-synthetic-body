@@ -179,7 +179,7 @@ class EmbodiedRunner:
             })
         return rows, np.stack(hiddens)
 
-    def run(self, names, tasks, repeats, out_path, log=print):
+    def run(self, names, tasks, repeats, out_path, log=print, rep_start=0):
         out = Path(out_path)
         out.parent.mkdir(parents=True, exist_ok=True)
         hid_dir = out.with_suffix("")
@@ -189,7 +189,7 @@ class EmbodiedRunner:
         if out.exists():
             done = {json.loads(l)["episode"] for l in out.open()}
         allc = tconditions()
-        jobs = [(allc[n], task, r) for n in names for task in tasks for r in range(repeats)
+        jobs = [(allc[n], task, r) for n in names for task in tasks for r in range(rep_start, rep_start + repeats)
                 if f"{n}|{task}|{r}" not in done]
         log(f"{len(jobs)} episodes to run ({len(done)} already done) -> {out}  [layers {self.layers}]")
         t_start = time.time()

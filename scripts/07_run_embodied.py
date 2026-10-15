@@ -22,6 +22,7 @@ ap.add_argument("--conditions", default="T0,TR,TC,TS,TL,TU,TN,TNC,TN0,TRx")
 ap.add_argument("--tasks", default="add,mul")
 ap.add_argument("--repeats", type=int, default=2)
 ap.add_argument("--name", default="embodied")
+ap.add_argument("--rep_start", type=int, default=0, help="first repeat index (new seeds for replications)")
 ap.add_argument("--strength", type=float, help="injection scale (default cfg.embodied_strength)")
 ap.add_argument("--quick", action="store_true", help="T0,TR,TS,TN; add only; 1 repeat")
 args = ap.parse_args()
@@ -42,9 +43,9 @@ probes = ProbeSet(cfg.probe_dir, sorted(set(cfg.probe_layers) | {cfg.inject_laye
 ap_set = appraisal.maybe_load("artifacts/appraisal", cfg.probe_layers)
 runner = EmbodiedRunner(lm, probes, cfg, ap_set)
 out = Path(cfg.run_dir) / f"{args.name}.jsonl"
-runner.run(names, tasks, args.repeats, out)
+runner.run(names, tasks, args.repeats, out, rep_start=args.rep_start)
 
 provenance.record(out, cfg, device=lm.device,
                   data={f"probes_L{L}": Path(cfg.probe_dir) / f"layer_{L}.pkl" for L in probes.layers},
-                  results={"conditions": names, "tasks": tasks, "repeats": args.repeats,
+                  results={"conditions": names, "tasks": tasks, "repeats": args.repeats, "rep_start": args.rep_start, "strength": cfg.embodied_strength,
                            "hidden_dir": str(out.parent / (out.stem + "_hidden"))})
