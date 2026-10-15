@@ -12,6 +12,7 @@ from pathlib import Path
 
 from isa.body import Body, BodyParams, PHASES, SCRIPTED_A, EVENTS, CHANNELS
 from isa import scenarios as S
+from isa import appraisal
 
 FRAMINGS = ("threat", "challenge")
 
@@ -93,6 +94,7 @@ class Runner:
         self.lm, self.probes, self.cfg, self.sae = lm, probes, cfg, sae
         self.max_turns = None  # debugging: cut episodes short
         self.layers = sorted(set(cfg.probe_layers) | ({cfg.sae_layer} if sae else set()))
+        self.appraisal = appraisal.maybe_load("artifacts/appraisal", cfg.probe_layers)
         self.arousal_dir, self.inject_norm = probes.direction(cfg.inject_layer, "arousal")
         self.threat_dir, _ = probes.direction(cfg.inject_layer, "threat")
 
@@ -191,6 +193,8 @@ class Runner:
             with self._steer_ctx(c, a):
                 hid = lm.reply_hidden(history, reply, self.layers)
             scores = self.probes.score(hid)
+            if self.appraisal:
+                scores.update(self.appraisal.score(hid))
             threat = max(-1.0, min(1.0, scores[f"threat_L{cfg.loop_layer}"]))  # loop input, clipped
             prev_entropy = entropy
 

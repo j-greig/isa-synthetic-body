@@ -1,7 +1,8 @@
 # Synthetic Body: An ISA Experiment on a Language Model
 
 **Version:** 0.2 · **Date:** 2026-10-15 · **Owner:** Zilla
-**Based on:** Del Popolo Cristaldi, Banellis, Bottesi & Allen (2026), *Beyond accuracy: interoceptive self-appraisal and the meaning of bodily signals*, Trends in Cognitive Sciences. Cross-checked against Valmere & Taylor (2026), *From Interoception to Computational Interoception* (PhilArchive, VALFIT). See §9.
+**Based on:** Del Popolo Cristaldi, Banellis, Bottesi & Allen (2026), *Beyond accuracy: interoceptive self-appraisal and the meaning of bodily signals*, Trends in Cognitive Sciences. Probe corpus: Troiano, Oberländer & Klinger (2023), *Dimensional modeling of emotions in text with appraisal theories: corpus creation, annotation reliability, and prediction* (crowd-enVent), Computational Linguistics 49(1), doi:10.1162/coli_a_00461; modelling code https://github.com/sarnthil/crowd-enVent-modeling.  
+**Also:** cross-checked against Valmere & Taylor (2026), *From Interoception to Computational Interoception* (PhilArchive, VALFIT). See §9.
 
 ---
 
@@ -108,6 +109,8 @@ Every condition runs both framings across 5 human scenarios (2 agent scenarios f
 |---|---|---|
 | Threat score (threat vs. challenge) | `threat_L13`, `threat_L17` | Projection scaled to training passages (challenge −1, threat +1); analyse as change from rest |
 | Arousal score | `arousal_L13`, `arousal_L17` | Calm 0, aroused 1; same caveat |
+| Appraisal dims (crowd-enVent) | `ap_<dim>_L13`, `ap_<dim>_L17` | 21 predicted ratings (1–5) from ridge probes, e.g. `ap_urgency_L13`, `ap_pleasantness_L13` |
+| Emotion probabilities (crowd-enVent) | `emo_<label>_L13`, `emo_<label>_L17` | 13 emotions (e.g. `emo_fear_L13`); present only if `artifacts/appraisal/` exists |
 | Logistic-probe probabilities | `threat_p_L*`, `arousal_p_L*` | Saturate easily; for reference |
 | Emotion-word log-probs | `lp_afraid` … `lp_tired` | Side question, not added to history |
 | Self-reported activation (Level 1) | `self_report` | Expected value 0–9 |
@@ -141,6 +144,8 @@ Every condition runs both framings across 5 human scenarios (2 agent scenarios f
 - [ ] Check `artifacts/probes/report.json`: appraisal accuracy ≥ 0.85
 - [ ] If accuracy is a perfect 1.0, treat it with suspicion (likely picking up topic words); try held-out wording
 - [ ] Note: scores are scaled so training passages sit at −1 (challenge) / +1 (threat). In multi-turn runs the absolute level drifts (seen in testing: +2 to +13), so analysis uses **change from each episode's rest turns**. Compare conditions on these deltas, not raw levels
+
+- [ ] Optional: `bash scripts/00b_get_crowdenvent.sh`, then `python scripts/02c_train_appraisal.py` (appraisal + emotion probes from crowd-enVent; check `artifacts/appraisal/report.json`; the corpus has no stated licence, so it is git-ignored)
 
 ### Phase 3: Body (½ day)
 
