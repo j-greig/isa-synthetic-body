@@ -16,6 +16,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 from isa.cli import parser, config
 from isa.model import LM
 from isa.probes import ProbeSet
@@ -60,3 +62,9 @@ if args.sae:
 
 runner = Runner(lm, probes, cfg, sae=sae)
 runner.run(conds, scens, args.repeats, Path(cfg.run_dir) / f"{args.name}.jsonl", pull=args.pull)
+
+_out = Path(cfg.run_dir) / f"{args.name}.jsonl"
+provenance.record(_out, cfg, device=lm.device,
+                  data={f"probes_L{L}": Path(cfg.probe_dir) / f"layer_{L}.pkl" for L in probes.layers},
+                  results={"conditions": conds, "scenarios": scens, "repeats": args.repeats, "pull": args.pull,
+                           "rows_total": sum(1 for _ in open(_out)) if _out.exists() else 0})

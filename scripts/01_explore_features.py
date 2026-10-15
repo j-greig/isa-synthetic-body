@@ -8,6 +8,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 from isa.cli import parser, config
 from isa.model import LM
 from isa.sae import SAEReader
@@ -48,3 +50,7 @@ v, i = (-diffs).topk(args.k)
 for a, b in zip(i.tolist(), v.tolist()):
     print(f"  feature {a:6d}  +{b:.3f}")
 print("\nSearch these IDs on https://www.neuronpedia.org (gemma-3-1b-it) to see what they respond to.")
+
+provenance.record(f"artifacts/features/L{args.layer}", cfg, device=lm.device,
+                  results={"threat_top": diffs.topk(args.k)[1].tolist(), "excited_top": (-diffs).topk(args.k)[1].tolist(),
+                           "sae": cfg.sae_id_template.format(layer=args.layer)})

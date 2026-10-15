@@ -7,6 +7,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 import torch
 
 from isa.cli import parser, config
@@ -36,3 +38,6 @@ text, ent = lm.generate(msgs, max_new_tokens=40)
 dt = time.time() - t
 print(f"\nReply: {text}\n\n~{40 / dt:.1f} tokens/sec | mean entropy {ent:.2f}")
 print("\nOK. Now check Activity Monitor > Memory: pressure should be green or yellow.")
+
+provenance.record("logs/env_check", cfg, device=lm.device,
+                  results={"tokens_per_sec": round(40 / dt, 2), "reply": text, "dtype": str(lm.dtype)})

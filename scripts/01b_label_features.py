@@ -12,6 +12,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 import torch
 
 from isa.cli import parser, config
@@ -73,3 +75,5 @@ out = Path("docs") / f"features_L{args.layer}.md"
 out.write_text("\n".join(lines))
 print("\n".join(lines))
 print(f"\nWrote {out}")
+
+provenance.record(out, cfg, device=lm.device, results={"features": feats, "corpus_lines": len(corpus)})
