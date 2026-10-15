@@ -144,6 +144,29 @@ Self-report "how much is going on inside you" vs `a`, partial r controlling turn
 - **Sense check → new control** (9e145e7): the report could rise just because the injected direction pushes *digit outputs* up, whatever the question. Added `control_report`: self-unrelated 0–9 questions (how loud is a whisper; how heavy is a feather) asked under identical steering. If it tracks `a` as well, the effect is a digit shift, not access to an inner state.
 - **Queue reordered:** replication (T0, TR, TS, TN, TN0 × 2 tasks × reps 2–5, with the control) now runs before the dose sweep.
 
+## 2026-10-15/16: v2 complete (23:08 UTC)
+
+`runs/embodied_v2.jsonl`: 40 episodes (10 conditions × add/mul × 2 repeats). The first 25 episodes ran on code 2fd4485 (no control question); the last 15 (TN, TNC, TN0, TRx; run 20261015T222814Z-58dc7a) on 9e145e7 (with `control_report`). Summary copied to `docs/results/embodied_v2_summary.md`.
+
+**Decoding the hidden body from pre-reply activations (L13, leave-one-episode-out):** nulls T0 −0.14 and TN0 0.04 (clean after the shuffle fix). Every injected channel ≈0.99. Sham 0.81. Labelled text 0.52, unlabelled 0.36. This is expected propagation of an injected vector, not evidence of interpretation.
+
+**Inner report vs hidden `a`, per-episode r:**
+
+| Condition | Inner report | Control report | Accuracy |
+|---|---|---|---|
+| TN (own state → random direction) | 0.83, 0.87, 0.85, 0.93 | 0.39, 0.13, 0.22 | 0.95 |
+| TNC (own state → concept direction) | 0.78, 0.79, 0.82, 0.79 | 0.67, 0.57, 0.73, 0.41 | 0.97 |
+| TN0 (own state, not injected) | −0.20, −0.16, −0.59, −0.49 | 0.01, 0.41, 0.59, 0.53 | 0.98 |
+| TRx (2.5× dose) | 0.74, −0.33, −0.36, 0.10 | 0.80, 0.31, 0.32, 0.64 | **0.42** |
+
+**Reading:** through the random direction, the report tracks the hidden signal while the control question mostly doesn't, a dissociation. Through the concept direction both move (a general push on answers). At high dose the model degrades.
+
+**Unexpected:** in TN0 the report goes *down* when the model's own surprisal and entropy go up (all four episodes negative). Note only; it needs its own test.
+
+**Flat measure:** `p_harder` sits at ≈1.0 everywhere. Uninformative; candidate for redesign.
+
+**Artifact:** "Beyond tokens" section added as provisional (version 3).
+
 ---
 
 ## Template for new entries

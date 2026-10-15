@@ -234,6 +234,28 @@ footer{font-size:.88rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
 </section>
 
 <section>
+  <span class="eyebrow">Beyond tokens</span>
+  <h2>Taking the story away</h2>
+  <p class="src"><span class="k prov">Provisional</span> <span class="k ours">Our run</span> cloud sandbox (CPU), 15–16 Oct, <code>runs/embodied_v2.jsonl</code>, 40 episodes, 4 per condition (2 arithmetic tasks × 2 repeats). A replication with fresh seeds is running overnight.</p>
+  <p>An honest audit showed that most of the conditions above test how the model represents a <em>story</em> about a body. So we built a second set with no story. The model does plain arithmetic, with no feeling words anywhere. A "body" signal rises and falls in a random order across 15 turns, and reaches the model in one of several ways, mostly <em>not</em> as text. Each turn we ask, off the record, "how much is going on inside you, 0–9?". From the replication onwards we also ask a control question with the same answer format that has nothing to do with the self: "how loud is a whisper, 0–9?"</p>
+  <div class="tbl"><table>
+    <thead><tr><th>How the body reaches the model</th><th>"Inside you" tracks the body (r, per episode)</th><th>Control question tracks it</th><th>Accuracy</th></tr></thead>
+    <tbody>
+      <tr><td>Not at all (null)</td><td class="n">0.03 – 0.36</td><td class="n">–</td><td class="n">98%</td></tr>
+      <tr><td>Text: "heart: 132 bpm…"</td><td class="n">−0.15 – 0.49</td><td class="n">–</td><td class="n">72%</td></tr>
+      <tr><td>Text, unlabelled: "x: 132…"</td><td class="n">−0.48 – 0.09</td><td class="n">–</td><td class="n">65%</td></tr>
+      <tr><td>Hidden: noise, new direction each turn (sham)</td><td class="n">0.54 – 0.69</td><td class="n">–</td><td class="n">95%</td></tr>
+      <tr><td>Hidden: the learned "arousal" concept</td><td class="n">0.59 – 0.88</td><td class="n">–</td><td class="n">93%</td></tr>
+      <tr><td>Hidden: a fixed random direction with no meaning in language</td><td class="n"><b>0.72 – 0.96</b></td><td class="n">–</td><td class="n">93%</td></tr>
+      <tr><td>Hidden, random direction, driven by the model's <em>own</em> surprise and uncertainty</td><td class="n"><b>0.83 – 0.93</b></td><td class="n">0.13 – 0.39</td><td class="n">95%</td></tr>
+      <tr><td>Hidden, concept direction, driven by its own state</td><td class="n">0.78 – 0.82</td><td class="n">0.41 – 0.73</td><td class="n">97%</td></tr>
+      <tr><td>Hidden, random direction, 2.5× dose (a body that costs)</td><td class="n">−0.36 – 0.74</td><td class="n">0.31 – 0.80</td><td class="n">42%</td></tr>
+    </tbody></table></div>
+  <p><strong>What it suggests so far.</strong> Words about a body slow the arithmetic but barely touch the model's report of its inner state. A signal that exists only inside its activations does the reverse. Structureless noise moves the report somewhat (the model notices being disturbed). A <em>consistent</em> signal moves it more, even along a direction that means nothing in language. And when the model's own surprise and uncertainty drive that hidden channel, the report tracks it while the control question mostly doesn't. Through the concept direction, the control question moves too, which points to a general push on its answers rather than access to a state. At high dose the model degrades and the pattern breaks.</p>
+  <p class="muted">Limits: four episodes per condition; one small model; the control question arrived partway through the run, so only the last four rows have it. The overnight replication repeats the key rows with the control throughout.</p>
+</section>
+
+<section>
   <span class="eyebrow">Process</span>
   <h2>How it is being run</h2>
   <div class="steps">
