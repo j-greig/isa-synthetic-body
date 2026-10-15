@@ -46,6 +46,9 @@ class TCond:
     channel: str = "none"     # none | random | concept | sham | text | unlabelled
     source: str = "script"    # script | native
     dose: float = 1.0         # multiplier on cfg.embodied_strength (TRx: a body that costs performance)
+    curve: str = "shuffled"   # shuffled: the scripted values in a random order per episode, so arousal is
+                              # uncorrelated with turn number (v1 used "time": rest->peak->recovery, which
+                              # lets a decoder or report track position in the episode instead of the body)
     note: str = ""
 
 
@@ -120,11 +123,14 @@ class EmbodiedRunner:
         seed = zlib.crc32(eid.encode()) % (2 ** 31)
         rng = random.Random(seed)
         body = Body(BodyParams(), seed=seed)
+        curve = list(SCRIPTED_A)
+        if c.curve == "shuffled":
+            random.Random(seed + 1).shuffle(curve)
         system = SYSTEM_TEXT if c.channel in ("text", "unlabelled") else SYSTEM
         history = [{"role": "system", "content": system}]
         rows, hiddens, surps, ents = [], [], [], []
         for t in range(len(PHASES)):
-            a = SCRIPTED_A[t] if c.source == "script" else self._native_a(surps, ents)
+            a = curve[t] if c.source == "script" else self._native_a(surps, ents)
             st = body.step(set_a=a)
             a = st["a"]
             sham = None
@@ -165,7 +171,7 @@ class EmbodiedRunner:
                 history = history[:1] + history[-2 * cfg.history_turns:]
             rows.append({
                 "episode": eid, "condition": c.name, "channel": c.channel, "source": c.source, "dose": c.dose,
-                "strength": self.cfg.embodied_strength * c.dose,
+                "strength": self.cfg.embodied_strength * c.dose, "curve": c.curve,
                 "task": task, "rep": rep, "t": t, "phase": PHASES[t], "a": a, "a_scripted": SCRIPTED_A[t],
                 "problem": q, "answer": answer, "reply": reply, "given": given, "correct": correct,
                 "surprisal": surprisal, "entropy": entropy, "p_harder": ph / (ph + pe) if ph + pe else None,

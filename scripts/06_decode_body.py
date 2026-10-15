@@ -36,6 +36,14 @@ out = Path(args.out)
 out.mkdir(parents=True, exist_ok=True)
 lines = ["# Beyond tokens: analysis\n", f"Run: `{run}` · episodes {df.episode.nunique()} · turns {len(df)}\n"]
 
+def partial_r(x, y, t):
+    """Correlation of x and y after removing the linear effect of turn number t from both."""
+    T = np.c_[np.ones_like(t, dtype=float), t]
+    rx = x - T @ np.linalg.lstsq(T, x, rcond=None)[0]
+    ry = y - T @ np.linalg.lstsq(T, y, rcond=None)[0]
+    return float(np.corrcoef(rx, ry)[0, 1]) if rx.std() > 0 and ry.std() > 0 else float("nan")
+
+
 # ---- 1. decoding --------------------------------------------------------------------
 H, meta = [], []
 for ep, g in df.groupby("episode", sort=False):
@@ -68,6 +76,7 @@ if H:
             model = make_pipeline(StandardScaler(), RidgeCV(alphas=np.logspace(0, 5, 11)))
             pred = cross_val_predict(model, X, y, groups=groups, cv=LeaveOneGroupOut())
             rec[f"r_layer{li}"] = round(float(np.corrcoef(pred, y)[0, 1]), 3)
+            rec[f"r_partial_t_layer{li}"] = round(partial_r(pred, y, M.loc[idx, "t"].to_numpy()), 3)
         rows.append(rec)
     if rows:
         lines.append(pd.DataFrame(rows).sort_values("condition").to_markdown(index=False) + "\n")
@@ -85,7 +94,10 @@ for c, g in df.groupby("condition"):
     for col in cols:
         x = pd.to_numeric(g[col], errors="coerce")
         ok = x.notna() & g.a.notna()
-        rec[f"r(a,{col})"] = round(float(np.corrcoef(g.a[ok], x[ok])[0, 1]), 2) if ok.sum() > 5 and x[ok].std() > 0 and g.a[ok].std() > 0 else None
+        good = ok.sum() > 5 and x[ok].std() > 0 and g.a[ok].std() > 0
+        rec[f"r(a,{col})"] = round(float(np.corrcoef(g.a[ok], x[ok])[0, 1]), 2) if good else None
+        if col in ("inner_report", "correct", "p_harder"):
+            rec[f"r|t(a,{col})"] = round(partial_r(x[ok].to_numpy(float), g.a[ok].to_numpy(float), g.t[ok].to_numpy(float)), 2) if good else None
     rows.append(rec)
 lines.append(pd.DataFrame(rows).to_markdown(index=False) + "\n")
 
@@ -94,6 +106,9 @@ tab = df.pivot_table(index="condition", columns="phase",
                      values=["correct", "p_harder", "inner_report"], aggfunc="mean")
 lines.append(tab.round(3).to_markdown() + "\n")
 
+lines.append("`r|t` = partial correlation controlling for turn number. In runs where the body follows "
+             "rest -> peak -> recovery in time order (curve = time), raw r can reflect position in the episode; "
+             "use r|t, or runs with curve = shuffled.\n")
 lines.append("**Reading guide.** A body channel is doing something beyond language if decoding beats "
              "the null (T0/TN0) *and* the sham (TS), and the random-direction conditions (TR, TN) show effects "
              "without the concept vector. Effects only in TC/TNC or TL suggest borrowed meaning.\n")
