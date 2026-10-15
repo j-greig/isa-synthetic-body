@@ -29,6 +29,7 @@ class Config:
 
     # Closed loop
     loop_gains: tuple = (0.05, 0.1, 0.2)
+    loop_scale: float = 2.0       # threat-score change (from rest baseline) that maps to a full ±1 loop input
 
     # Activation body: steering strength as a multiple of the typical activation norm
     inject_strength: float = 0.6

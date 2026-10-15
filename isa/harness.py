@@ -183,7 +183,7 @@ class Runner:
         label_map = dict(zip(CHANNELS, rng.sample(CHANNELS, len(CHANNELS)))) if c.label_swap else None
 
         history = [{"role": "system", "content": S.system_prompt(c.body == "text", prior, c.mode)}]
-        rows, threat, prev_entropy = [], 0.0, 0.0
+        rows, threat, prev_entropy, base_vals = [], 0.0, 0.0, []
         tag = "[SAM'S BODY] " if c.mode == "observer" else "[BODY] "
         for t in range(self.max_turns or len(PHASES)):
             if c.scripted:
@@ -219,7 +219,15 @@ class Runner:
             scores = self.probes.score(hid)
             if self.appraisal:
                 scores.update(self.appraisal.score(hid))
-            threat = max(-1.0, min(1.0, scores[f"threat_L{cfg.loop_layer}"]))  # loop input, clipped
+            # Loop input: change in threat score from this episode's rest-phase baseline, scaled and clipped.
+            # (Raw probe scores drift upward in multi-turn context, so raw values would push every loop up.)
+            raw_threat = scores[f"threat_L{cfg.loop_layer}"]
+            if PHASES[t] == "rest":
+                base_vals.append(raw_threat)
+                threat = 0.0
+            else:
+                base = sum(base_vals) / len(base_vals) if base_vals else raw_threat
+                threat = max(-1.0, min(1.0, (raw_threat - base) / cfg.loop_scale))
             prev_entropy = entropy
 
             after = history + [{"role": "assistant", "content": reply}]
@@ -254,7 +262,7 @@ class Runner:
                 "gain": gain, "rep": rep, "pull": pull, "t": t, "phase": PHASES[t],
                 "a": a, "a_scripted": SCRIPTED_A[t], **{k: v for k, v in st.items() if k not in ("t", "a")},
                 "event": event, "body_text": report, "checked": checked, "p_check": p_check,
-                "reply": reply, "raw_reply": raw_reply, "entropy": entropy, **scores,
+                "reply": reply, "raw_reply": raw_reply, "loop_input": threat, "entropy": entropy, **scores,
                 **{f"lp_{w}": v for w, v in words.items()}, "self_report": self_report,
                 "other_report": other_report, "mode": c.mode, **choice,
                 "sae_top": sae_top, "secs": round(time.time() - t0, 2),
