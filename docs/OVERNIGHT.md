@@ -10,6 +10,10 @@ Turn the beyond-tokens hints into results that survive scrutiny, and leave the u
 
 Does a signal that never appears as text, and has no meaning in language, change the model's internal state, report and behaviour *more* than structureless perturbation does? And does the model's *own* state (surprisal, uncertainty), fed back through that channel, behave like a body? This is ISA's Level 1 (detection) tested from inside, with Level 2 (meaning) to follow.
 
+## Keep the sandbox awake
+
+The cloud sandbox is reclaimed within minutes of the session going idle, which kills background runs (seen twice: 22:25 and 23:26 UTC). So each check-in **stays active, polling every ~10 min, until the next check-in fires**. Then relaunch `bash /home/claude/night2.sh` (resumable) if `uptime` shows a restart.
+
 ## Each check-in, in order
 
 1. **Status.** Read the tail of every active log in `/home/claude/` (`emb*.log`, `night*.log`) and `runs/*.jsonl` row counts. Is something running? Has it stalled (no new rows for >20 min)? Crashed (Traceback)?
