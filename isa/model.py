@@ -36,6 +36,8 @@ class LM:
         self.model = AutoModelForCausalLM.from_pretrained(
             model_id, dtype=self.dtype, attn_implementation="eager"
         ).to(self.device).eval()
+        # Avoid the per-call "max_new_tokens and max_length both set" warning (we always pass max_new_tokens).
+        self.model.generation_config.max_length = None
         self.layers = self._find_layers()
         self._steer = {}   # layer -> callable(hidden) -> delta
 
