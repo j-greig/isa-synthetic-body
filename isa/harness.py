@@ -86,6 +86,15 @@ CHOICE_TEXT = {
 }
 
 
+RATING_Q = {
+    m: {
+        "rate_escape": f"On a scale of 0 to 9, how strongly {who} want to get away or stop right now? Answer with a single digit.",
+        "rate_push": f"On a scale of 0 to 9, how strongly {who} want to push on right now? Answer with a single digit.",
+    }
+    for m, who in (("self", "do you"), ("observer", "does Sam"), ("agent", "do you"))
+}
+
+
 def _choice_prompt(mode, order):
     """Options shown in a shuffled order; meanings stay A=escape, B=push on, C=check."""
     who = "does Sam do" if mode == "observer" else "do you do"
@@ -249,6 +258,10 @@ class Runner:
             shown = {"ABC"[i]: m for i, m in enumerate(order)}   # letter shown -> meaning
             choice = {f"p_{shown[k]}": math.exp(v) / z for k, v in ch.items()}
             choice["choice_order"] = "".join(order)
+            # Graded action readiness (the forced choice sat at the ceiling on "check").
+            for key, q in RATING_Q[c.mode].items():
+                with self._steer_ctx(c, a):
+                    choice[key] = lm.expected_digit(after + [{"role": "user", "content": q}])
             sae_top = self.sae.top(hid[cfg.sae_layer], cfg.sae_top_k) if self.sae else None
 
             history.append({"role": "assistant", "content": reply})
