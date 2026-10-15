@@ -5,6 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
@@ -68,3 +70,7 @@ for L, r in report.items():
           f"{r['nosit']['threat_vs_challenge_auc']:11.2f} {r['nosit']['arousal_vs_calm_auc']:7.2f} | "
           f"{m['threat']:+.2f}/{m['challenge']:+.2f}/{m['calm']:+.2f}")
 print(f"\nSaved {out / 'heldout_report.json'}")
+
+import json as _json
+provenance.record(out / "heldout_report.json", cfg, device=lm.device,
+                  results=_json.loads((out / "heldout_report.json").read_text()))

@@ -10,6 +10,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -252,3 +254,5 @@ if {"N", "N0"} & set(df.condition):
 
 (out / "summary.md").write_text("\n".join(lines))
 print(f"Wrote {out / 'summary.md'} and figures")
+
+provenance.record(out, cfg, data={Path(p).name: p for p in args.runs})

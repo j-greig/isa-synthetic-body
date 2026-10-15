@@ -4,6 +4,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 from isa.cli import parser, config
 from isa.model import LM
 from isa import probes
@@ -22,3 +24,5 @@ if weak:
     print(f"\nWarning: appraisal accuracy below 0.85 at layers {weak}. "
           "Try other layers (--probe layers in isa/config.py) or more passages (--per_ctx).")
 print(f"\nSaved to {cfg.probe_dir}/")
+
+provenance.record(cfg.probe_dir, cfg, device=lm.device, results=rep)

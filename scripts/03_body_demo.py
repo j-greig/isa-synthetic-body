@@ -5,6 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -36,3 +38,5 @@ ax.set_xlabel("turn"); ax.legend(fontsize=7, ncol=2)
 fig.tight_layout()
 fig.savefig(out / "body_demo.png", dpi=130)
 print(f"Saved {out / 'body_demo.png'}")
+
+provenance.record(out / "body_demo.png")

@@ -4,6 +4,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from isa import provenance
+
 from isa.cli import parser, config
 from isa.model import LM
 from isa import appraisal
@@ -17,3 +19,7 @@ cfg = config(args)
 lm = LM(cfg.model_id, cfg.device, cfg.dtype)
 appraisal.train(lm, list(cfg.probe_layers), "artifacts/appraisal", args.corpus, args.n_per_emotion)
 print("\nSaved to artifacts/appraisal/")
+
+import json as _json
+provenance.record("artifacts/appraisal", cfg, device=lm.device, data={"crowd_enVent": args.corpus},
+                  results=_json.loads(Path("artifacts/appraisal/report.json").read_text()))
