@@ -6,6 +6,7 @@ Built to test **interoceptive self-appraisal (ISA)** (Del Popolo Cristaldi et al
 
 - **Body:** a simulated arousal state that drives heart, breath, gut and energy readings, or a *computational* body (uncertainty, context load, errors, tools).
 - **Inside view:** linear probes (threat vs. challenge; arousal) and Gemma Scope 2 SAE features, read every turn.
+- **Appraisal probes (crowd-enVent):** optional ridge probes for 21 appraisal dimensions (pleasantness, urgency, self-control, ...) and 13 emotions, trained on the crowd-enVent corpus (Troiano, Oberländer & Klinger 2023, *Computational Linguistics* 49(1)). Run `bash scripts/00b_get_crowdenvent.sh` then `python scripts/02c_train_appraisal.py`; the harness logs `ap_*` and `emo_*` columns automatically when `artifacts/appraisal/` exists. The corpus has no stated licence and is git-ignored.
 - **Recursion:** in closed-loop conditions, the model's threat appraisal feeds back into its body.
 
 Full plan with tick-off phases: [`docs/SPEC.md`](docs/SPEC.md).

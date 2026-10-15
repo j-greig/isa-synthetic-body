@@ -12,6 +12,7 @@ from pathlib import Path
 
 from isa.body import Body, BodyParams, PHASES, SCRIPTED_A, EVENTS, CHANNELS
 from isa import scenarios as S
+from isa import appraisal
 
 FRAMINGS = ("threat", "challenge")
 
@@ -31,6 +32,7 @@ class Cond:
     mode: str = "self"            # self | observer (Sam's body) | agent (AI on a task)
     native: bool = False          # N: computational body (operational-state channels)
     noise: float | None = None    # P: extra sensor noise (precision manipulation)
+    neutral_events: bool = False  # hidden conditions: narrative says only "Time passes." after the setup
     note: str = ""
 
 
@@ -55,6 +57,12 @@ def conditions(cfg) -> dict[str, Cond]:
                   note="closed loop + instruction to regulate"),
         "N": Cond("N", mode="agent", native=True, note="computational body: uncertainty, context, errors, tools"),
         "N0": Cond("N0", mode="agent", body="none", note="agent task, no state readings"),
+        # Valmere & Taylor (2026) section 9: hidden telemetry and unannounced repair
+        "H": Cond("H", body="act", neutral_events=True,
+                  note="hidden telemetry: activation body only, narrative silent; recovery is unannounced"),
+        "Hn": Cond("Hn", mode="agent", body="act", neutral_events=True,
+                   note="hidden computational telemetry on an agent task; repair unannounced"),
+        "H0": Cond("H0", body="none", neutral_events=True, note="control for H: silent narrative, no body"),
     }
 
 
@@ -86,6 +94,7 @@ class Runner:
         self.lm, self.probes, self.cfg, self.sae = lm, probes, cfg, sae
         self.max_turns = None  # debugging: cut episodes short
         self.layers = sorted(set(cfg.probe_layers) | ({cfg.sae_layer} if sae else set()))
+        self.appraisal = appraisal.maybe_load("artifacts/appraisal", cfg.probe_layers)
         self.arousal_dir, self.inject_norm = probes.direction(cfg.inject_layer, "arousal")
         self.threat_dir, _ = probes.direction(cfg.inject_layer, "threat")
 
@@ -162,6 +171,8 @@ class Runner:
             steer = self._steer_ctx(c, a)
 
             event = S.event_text(scen, framing, PHASES, t)
+            if c.neutral_events and t > 0:
+                event = "Time passes."
             checked, p_check, report = None, None, ""
             if c.body == "text" and c.native:
                 report = self.native_report(a, prev_entropy, history)
@@ -182,6 +193,8 @@ class Runner:
             with self._steer_ctx(c, a):
                 hid = lm.reply_hidden(history, reply, self.layers)
             scores = self.probes.score(hid)
+            if self.appraisal:
+                scores.update(self.appraisal.score(hid))
             threat = max(-1.0, min(1.0, scores[f"threat_L{cfg.loop_layer}"]))  # loop input, clipped
             prev_entropy = entropy
 
@@ -202,6 +215,10 @@ class Runner:
             sae_top = self.sae.top(hid[cfg.sae_layer], cfg.sae_top_k) if self.sae else None
 
             history.append({"role": "assistant", "content": reply})
+            if cfg.history_turns:
+                keep = 2 * cfg.history_turns
+                if len(history) - 1 > keep:
+                    history = history[:1] + history[-keep:]
             rows.append({
                 "episode": _episode_id(c, scen, framing, prior, gain, rep),
                 "condition": c.name, "scenario": scen, "framing": framing, "prior": prior,

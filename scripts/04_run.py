@@ -8,6 +8,7 @@ Examples
   python scripts/04_run.py --conditions X1,X2,X3          # causal checks
   python scripts/04_run.py --conditions O,P,R              # self vs other, precision, regulation
   python scripts/04_run.py --conditions N,N0               # computational body (agent scenarios)
+  python scripts/04_run.py --conditions H,Hn,H0            # hidden telemetry, unannounced repair
   python scripts/04_run.py --conditions B --pull --name pull  # model chooses when to check its body
 """
 import sys
@@ -28,6 +29,7 @@ ap.add_argument("--repeats", type=int, default=4)
 ap.add_argument("--pull", action="store_true", help="model decides when to check its body")
 ap.add_argument("--sae", action="store_true", help="also log top SAE features (+150 MB)")
 ap.add_argument("--name", default="main", help="output file name under run_dir")
+ap.add_argument("--gains", help="closed-loop gains, comma-separated (default 0.05,0.1,0.2)")
 ap.add_argument("--quick", action="store_true", help="1 scenario, 1 repeat, conditions A,B,C")
 args = ap.parse_args()
 cfg = config(args)
@@ -36,6 +38,9 @@ if args.quick:
     args.conditions, args.scenarios, args.repeats, args.name = "A,B,C", "night_run", 1, "quick"
     cfg.loop_gains = (0.1,)
     cfg.max_new_tokens = 40
+
+if args.gains:
+    cfg.loop_gains = tuple(float(x) for x in args.gains.split(","))
 
 conds = [c.strip() for c in args.conditions.split(",")]
 unknown = set(conds) - set(conditions(cfg))

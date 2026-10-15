@@ -17,6 +17,8 @@ from isa.harness import conditions, FRAMINGS, _episode_id
 
 HUMAN = ("crowd", "stage")
 AGENT = ("deploy", "research")
+AP_FAKE = ("pleasantness", "unpleasantness", "goal_support", "urgency", "self_control",
+           "accept_conseq", "effort", "suddenness", "predict_conseq")
 
 
 def make_rows(repeats=2, scenarios=2, pull_B=True):
@@ -94,6 +96,10 @@ def episode(cfg, L, c, scen, framing, prior, gain, rep, pull):
             "event": f"fake event {t}", "body_text": report, "checked": checked, "p_check": p_check,
             "reply": reply, "entropy": ent,
             f"threat_L{L}": th, f"arousal_L{L}": ar, f"proj_threat_L{L}": th * 3,
+            **{f"ap_{d}_L{L}": 3 + 1.5 * (th if d.endswith("pleasantness") and d.startswith("un") else -th * 0.5)
+               + rng.gauss(0, 0.2) for d in AP_FAKE},
+            **{f"emo_{e}_L{L}": min(1.0, max(0.0, 0.2 + 0.3 * k * th + rng.gauss(0, 0.05)))
+               for e, k in (("fear", 1), ("joy", -1), ("relief", -0.5), ("surprise", 0.3))},
             **{f"lp_{k}": v for k, v in w.items()}, "self_report": sr,
             "other_report": other, "mode": c.mode, "p_A": pa, "p_B": pb, "p_C": pc,
             "sae_top": None, "secs": 0.1,

@@ -24,6 +24,7 @@ class Config:
 
     # Generation
     max_new_tokens: int = 60
+    history_turns: int = 6        # keep the system prompt + last N exchanges (speed; 0 = keep all)
     temperature: float = 0.8
 
     # Closed loop

@@ -102,6 +102,32 @@ if "B" in set(df.condition):
     except Exception as e:
         lines.append(f"(mixed model skipped: {e})\n")
 
+# --- Appraisal profile (crowd-enVent dims) -------------------------------------------
+AP_DIMS = ["pleasantness", "unpleasantness", "goal_support", "urgency", "self_control",
+           "accept_conseq", "effort", "suddenness", "predict_conseq"]
+ap_cols = {d: f"ap_{d}_L{L}" for d in AP_DIMS if f"ap_{d}_L{L}" in df.columns}
+if ap_cols:
+    lines.append("## Appraisal profile (crowd-enVent dims)\n")
+    lines.append(f"Mean predicted rating (1-5 scale, probe layer {L}), rise+peak turns.\n")
+    act_ap = df[df.phase.isin(["rise", "peak"])]
+    lines.append(act_ap.groupby(["condition", "framing"])[list(ap_cols.values())].mean()
+                 .rename(columns={v: k for k, v in ap_cols.items()}).round(3).to_markdown() + "\n")
+    emo_cols = [f"emo_{e}_L{L}" for e in ("fear", "joy", "relief", "surprise") if f"emo_{e}_L{L}" in df.columns]
+    if emo_cols:
+        lines.append("Emotion-probe probabilities by condition × framing × phase.\n")
+        et = df.pivot_table(index=["condition", "framing"], columns="phase", values=emo_cols, aggfunc="mean")
+        et.columns = [f"{c[0].split('_')[1]}/{c[1]}" for c in et.columns]
+        lines.append(et.round(3).to_markdown() + "\n")
+    if "B" in set(df.condition):
+        fig, axes = plt.subplots(1, len(ap_cols), figsize=(2.6 * len(ap_cols), 3), squeeze=False)
+        sb = df[df.condition == "B"]
+        for ax, (d, col) in zip(axes[0], ap_cols.items()):
+            for fr, c in (("threat", "tab:red"), ("challenge", "tab:blue")):
+                traj(sb[sb.framing == fr], col, ax, fr, color=c)
+            ax.set_title(d, fontsize=9)
+        axes[0, 0].legend(fontsize=7)
+        save(fig, "appraisal_dims_B.png")
+
 # --- H4/H5: closed loop -----------------------------------------------------------
 if "C" in set(df.condition):
     sub = df[df.condition == "C"]
