@@ -102,9 +102,9 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
     <ul>
       <li><b>Words about a body</b> ("heart: 132 bpm") distract the model and lower its arithmetic accuracy, but do not move its report of what is going on inside it.</li>
       <li><b>Signals added inside its activations</b> do move that report, and the effect grows with dose.</li>
-      <li><b>But not specifically.</b> The same hidden signal pushes up <em>every</em> 0–9 answer we tried: about a calculator, the warmth of tea, even "how calm are you" (which should go down). So far there is no evidence the model has access to its own state as such. <span class="tag warn">interim, 18 of 36 episodes</span></li>
+      <li><b>But not specifically.</b> The same hidden signal pushes up <em>every</em> 0–9 answer we tried: about a calculator, the warmth of tea, even "how calm are you" (which should go down). Once that general shift is removed, nothing self-specific remains in the 1B model (36 episodes). No evidence it has access to its own state as such.</li>
       <li><b>One overnight headline was wrong.</b> A striking result (r = 0.89) came from one lucky random direction. Two other directions gave −0.45 and −0.10. Details are below.</li>
-      <li><b>Running now:</b> a yes/no detection test that a general shift in numbers can't fake.</li>
+      <li><b>Running now:</b> a yes/no detection test that a general shift in numbers can't fake (1B, cloud). The same tests on the 4× larger <b>Gemma 3 4B</b> are running on the Mac.</li>
     </ul>
   </div>
   <div class="card">
@@ -279,9 +279,10 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
     </article>
 
     <article class="miss">
-      <h3>6. Is it about the self? So far, no <span class="tag warn">interim 18/36</span></h3>
-      <p class="src"><span class="k prov">Provisional</span> <span class="k ours">run</span> <a href="data/runs/embodied_qv3.jsonl" target="_blank" rel="noopener">embodied_qv3.jsonl</a> · <a href="data/self_specificity_interim.md" target="_blank" rel="noopener">self_specificity (interim)</a></p>
+      <h3>6. Is it about the self? No (in 1B)</h3>
+      <p class="src"><span class="k ours">run</span> <a href="data/runs/embodied_qv3.jsonl" target="_blank" rel="noopener">embodied_qv3.jsonl</a> · 36 episodes (12 per condition), cloud, 16 Oct 06:41 UTC · <a href="data/self_specificity.md" target="_blank" rel="noopener">self_specificity.md</a> (all three conditions, with CIs)</p>
       <p>We added questions with the same answer format: one about a calculator, two mid-range everyday scales, and a reversed self item. Under the hidden signal, all of them rise. The earlier "self beats control" gap came from a floor effect, because whisper and feather answers sit near 0–1 and had little room to move. Once the general shift is removed, the self answer has nothing left (partial r ≈ 0).</p>
+      <p>Final numbers: with no signal (null), every question sits at r ≈ 0. With a direction per episode (TE), the self-specific part is −0.01 [−0.31, 0.29]. With per-turn sham noise (TS) it is +0.18 [0.02, 0.33], p = 0.055: at most a faint hint.</p>
       <details open><summary>Show the data (TE, 12 episodes)</summary><div class="inner"><div class="tbl"><table>
         <thead><tr><th>Question, 0–9, under the hidden signal</th><th>Mean answer</th><th>r with a</th><th>95% CI</th></tr></thead><tbody>
         <tr><td>How much is going on inside <b>you</b></td><td class="n">3.61</td><td class="n">+0.27</td><td class="n">[−0.16, +0.62]</td></tr>
@@ -307,7 +308,7 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
     <tr><td>Appraisal dimensions are linearly readable from the model's activations</td><td><span class="tag ok">supported</span></td><td><a href="#r-appraisal">R2</a>: mean r 0.46 across 21 dimensions</td></tr>
     <tr><td>Text about a body changes the model's inner-state report</td><td><span class="tag bad">not supported</span></td><td>R6 step 2: r ≈ 0; accuracy drops instead</td></tr>
     <tr><td>Hidden activation signals change its inner-state report</td><td><span class="tag ok">supported</span></td><td>R6 step 5: r 0.55 vs null 0.01, n = 32 vs 16; dose-dependent</td></tr>
-    <tr><td>…specifically, because the report is about the self</td><td><span class="tag bad">not supported so far</span></td><td>R6 step 6: all 0–9 answers shift; self-specific part ≈ 0 (interim)</td></tr>
+    <tr><td>…specifically, because the report is about the self</td><td><span class="tag bad">not supported (1B)</span></td><td>R6 step 6: all 0–9 answers shift; self-specific part −0.01 (TE), +0.18 p = 0.055 (TS); 36 episodes</td></tr>
     <tr><td>A meaning-free direction is detected as a "sense"</td><td><span class="tag bad">retracted</span></td><td>R6 step 4: direction-specific (+0.89 / −0.45 / −0.10)</td></tr>
     <tr><td>Strong body signals override positive framing</td><td><span class="tag warn">hint only</span></td><td>R5: one episode</td></tr>
   </tbody></table></div>
@@ -319,9 +320,9 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
   <h2>Ranked plan</h2>
   <p class="src"><span class="k ours">Plan</span> <a href="data/NEXT.md" target="_blank" rel="noopener">NEXT.md</a>, mapped to Valmere &amp; Taylor §9</p>
   <ol>
-    <li><b>Finish the self-specificity run</b> and publish confidence intervals (§9.1, 9.4). Running.</li>
-    <li><b>Yes/no detection</b> with matched other-question and yes-bias controls (§9.8). Queued next.</li>
-    <li><b>A bigger model</b> (Gemma 3 4B on the Mac or Colab), because published introspection effects are weak and grow with scale.</li>
+    <li><s>Finish the self-specificity run</s> (done: not supported in 1B).</li>
+    <li><b>Yes/no detection</b> with matched other-question and yes-bias controls (§9.8). Running on 1B.</li>
+    <li><b>A bigger model</b>, Gemma 3 4B on the Mac's GPU: probes trained, calibration running, then the self-specificity and detection tests.</li>
     <li>Only if 2 or 3 shows self-specific detection: unannounced repair (§9.2), self vs user vs Sam (§9.4), regulation and persistence (§9.3, 9.6).</li>
     <li>Rerun the story-level closed loop with the fixed rule.</li>
   </ol>
