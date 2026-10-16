@@ -192,6 +192,17 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 
 **Next (running):** TR2 and TR3, other random directions; then the dose sweep.
 
+## 2026-10-16: TN0 puzzle, first look (02:30 UTC; existing data, no new runs)
+
+**Question.** Why does the inner report move *against* the model's own state when that state is not fed back (TN0, r = −0.24)?
+
+- The native `a` is not shuffled: it is built from the previous turn's surprisal and entropy, z-scored on the episode so far, so it trends with turn number (r(a, t) = 0.25 in TN0).
+- The inner report drifts down over turns in both T0 and TN0 (mixed model, turn coefficient −0.04 to −0.06, p < 0.001).
+- Higher input surprisal goes with a lower report in **T0 as well** (coefficient −0.16, p < 0.001), where nothing is fed back.
+- Partialling out a quadratic in turn: TN0 per-episode r falls to a mean of −0.14 (6/8 negative), while TN (0.89) and TR (0.91) are unchanged.
+
+**Reading.** Most of TN0's negative correlation is shared time trend. What's left is a weak negative link between how surprising the problem was and the "inside you" report: a property of the model's baseline behaviour, not evidence of introspection. The TR and TN effects survive the same control untouched.
+
 ---
 
 ## Template for new entries
