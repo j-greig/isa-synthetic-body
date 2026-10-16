@@ -167,6 +167,31 @@ Self-report "how much is going on inside you" vs `a`, partial r controlling turn
 
 **Artifact:** "Beyond tokens" section added as provisional (version 3).
 
+## 2026-10-16: Replication complete (01:06 UTC)
+
+`runs/embodied_rep.jsonl`: T0, TR, TS, TN, TN0 × add/mul × repeats 2–5 (fresh seeds) = 40 episodes, code 9e145e7 (control question present throughout). The run was interrupted twice by sandbox restarts and resumed (finished episodes skipped). Stats: `scripts/08_stats_inner.py` → `docs/results/embodied_rep_stats.md`.
+
+| Condition | n | Inner report r (Fisher mean) [range] | Control r | Inner vs control (paired p) | Accuracy |
+|---|---|---|---|---|---|
+| T0 null | 8 | 0.01 [−0.34, 0.35] | −0.28 | 0.05 | 0.96 |
+| **TR** random direction | 8 | **0.89** [0.76, 0.95] | **0.03** | 1e-5 | 0.91 |
+| TS sham | 8 | 0.56 [0.23, 0.73] | 0.31 | 0.01 | 0.95 |
+| **TN** own state → random direction | 8 | **0.89** [0.77, 0.94] | 0.35 | 4e-4 | 0.91 |
+| TN0 own state, not delivered | 8 | **−0.24** [−0.37, −0.06] | 0.35 | 9e-4 | 0.93 |
+
+TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z).
+
+**Reading**
+
+1. **Replicates v2.** A meaning-free hidden direction drives the "inside you" report specifically (r ≈ 0.9) while the self-unrelated control stays flat (≈ 0). The sham moves both, less (0.56 / 0.31).
+2. **Own state through the channel (TN):** the report tracks it at 0.89; the control moves somewhat (0.35).
+3. **TN0 replicates the v2 oddity.** With no injection, the report goes *down* as the model's own surprisal and entropy go up (8/8 episodes negative). A candidate genuine (if inverted) relationship between internal state and self-report, or a confound from problem difficulty. **Needs its own test** (e.g. regress on problem size).
+4. **Caveat:** T0's control r averages −0.28, although its `a` is never delivered. That puts the noise band on control correlations at roughly ±0.3. The TR inner-vs-control gap (0.89 vs 0.03) is well outside it.
+
+**Decoding (L13):** null T0 0.12, TN0 0.30 (its `a` is derived from the model's own state, so partial decodability is expected), injected ≈ 0.996, sham 0.85.
+
+**Next (running):** TR2 and TR3, other random directions; then the dose sweep.
+
 ---
 
 ## Template for new entries
