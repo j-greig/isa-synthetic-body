@@ -268,6 +268,13 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 
 **Reading.** At double dose the disturbance becomes general disruption: accuracy falls and the unrelated control question tracks the signal *more* than the self question does. Any self-preferential effect lives in a narrow, gentle range (≈0.02–0.04), with an inverted-U shape. That fits "registers as something going on" at low intensity, and "everything gets pushed around" at high intensity.
 
+## 2026-10-16: Morning: ranked plan, detection test, an incident (06:25 UTC)
+
+- **Plan:** `docs/NEXT.md` sharpens the user's brief and ranks next experiments against Valmere & Taylor §9.
+- **Interim qv3** (15 of 36 episodes; `scripts/09_self_specificity.py`): under hidden disturbance, every 0–9 answer rises. TE: "inside you" +0.27, "calm inside you" +0.25 (should fall if the effect were about the self), "inside a calculator" +0.43, door height +0.64, tea warmth +0.76, whisper/feather +0.36. **Self-specific partial r** (self answer vs `a` after removing the shared shift of the non-self answers): TE −0.01 [−0.31, 0.29], TS +0.11. The earlier inner-vs-control gap was largely a **floor effect**: whisper/feather answers sit near 0–1.
+- **New:** detection conditions TD, TDS, TD0 (on/off hidden signal; yes/no "anything unusual inside you" vs "inside a calculator", plus factual yes and no items to measure yes-bias). Dry-run with a fake model passed.
+- **Incident (agent error):** a side test loaded a second copy of the model while qv3 was running. The 8 GB sandbox OOM-killed qv3 at 05:22 UTC (18 of 36 done), and the queue moved on to the loop step, wasting about an hour. Recovered with queue v6: qv3 resumes, then detection. **Rule added:** never load a second model while a run is active; test with a fake model instead.
+
 ---
 
 ## Template for new entries

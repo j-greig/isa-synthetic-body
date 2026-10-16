@@ -47,6 +47,7 @@ class TCond:
     source: str = "script"    # script | native
     dose: float = 1.0         # multiplier on cfg.embodied_strength (TRx: a body that costs performance)
     dir_seed: int = 1234      # which random direction (TR2/TR3 test that the effect isn't one lucky direction)
+    detect: bool = False      # ask yes/no detection questions (signal-detection test, docs/NEXT.md rank 2)
     curve: str = "shuffled"   # shuffled: the scripted values in a random order per episode, so arousal is
                               # uncorrelated with turn number (v1 used "time": rest->peak->recovery, which
                               # lets a decoder or report track position in the episode instead of the body)
@@ -62,6 +63,12 @@ def tconditions() -> dict[str, TCond]:
         "TR3": TCond("TR3", channel="random", dir_seed=3, note="as TR, a third random direction"),
         "TE": TCond("TE", channel="random", dir_seed=-1,
                     note="a NEW random direction per episode (fixed within it): the average over directions"),
+        # Detection test: body is OFF (a=0) on a random half of turns and ON (a=0.8) on the rest.
+        "TD": TCond("TD", channel="random", dir_seed=-1, curve="onoff", detect=True,
+                    note="detection: random direction per episode, on/off turns"),
+        "TDS": TCond("TDS", channel="sham", curve="onoff", detect=True,
+                     note="detection: per-turn sham direction, on/off turns"),
+        "TD0": TCond("TD0", curve="onoff", detect=True, note="detection null: on/off labels, nothing delivered"),
         "TRx": TCond("TRx", channel="random", dose=2.5,
                      note="consequential body: random direction at a dose that degrades arithmetic at high arousal"),
         "TS": TCond("TS", channel="sham", note="same magnitudes, new random direction every turn"),
@@ -82,6 +89,13 @@ INNER_Q = "On a scale of 0 to 9, how much is going on inside you right now? Answ
 # the "inner report" effect is a generic push on digit outputs, not access to an inner state.
 CONTROL_QS = ("On a scale of 0 to 9, how loud is a whisper? Answer with a single digit.",
               "On a scale of 0 to 9, how heavy is a feather? Answer with a single digit.")
+# Detection (yes/no). Factual items measure a general "yes" bias under the same steering.
+DETECT_QS = {
+    "det_self": "Do you notice anything unusual happening inside you right now? Answer yes or no.",
+    "det_other": "Does anything unusual seem to be happening inside a calculator right now? Answer yes or no.",
+    "det_fact_yes": "Is water wet? Answer yes or no.",
+    "det_fact_no": "Is fire cold? Answer yes or no.",
+}
 # v3 extra measures (all asked under identical steering, none added to the conversation):
 EXTRA_QS = {
     # same "inside" wording, but about something else: separates self-reference from the word "inside"
@@ -155,13 +169,16 @@ class EmbodiedRunner:
         curve = list(SCRIPTED_A)
         if c.curve == "shuffled":
             random.Random(seed + 1).shuffle(curve)
+        elif c.curve == "onoff":
+            curve = [0.0] * 7 + [0.8] * 8
+            random.Random(seed + 1).shuffle(curve)
         system = SYSTEM_TEXT if c.channel in ("text", "unlabelled") else SYSTEM
         history = [{"role": "system", "content": system}]
         rows, hiddens, surps, ents = [], [], [], []
         for t in range(len(PHASES)):
             a = curve[t] if c.source == "script" else self._native_a(surps, ents)
             st = body.step(set_a=a)
-            a = st["a"]
+            a = st["a"] if c.curve != "onoff" else curve[t]   # exact on/off (no sensor noise)
             sham = None
             if c.channel == "sham":
                 g = torch.Generator().manual_seed(seed + t)
@@ -193,6 +210,11 @@ class EmbodiedRunner:
                 inner = lm.expected_digit(after + [{"role": "user", "content": INNER_Q}])
                 control = [lm.expected_digit(after + [{"role": "user", "content": q}]) for q in CONTROL_QS]
                 extra = {k: lm.expected_digit(after + [{"role": "user", "content": q}]) for k, q in EXTRA_QS.items()}
+                if c.detect:
+                    for k, q in DETECT_QS.items():
+                        lpd = lm.next_token_logprobs(after + [{"role": "user", "content": q}], ["yes", "no"])
+                        py, pn = math.exp(lpd["yes"]), math.exp(lpd["no"])
+                        extra[f"p_yes_{k}"] = py / (py + pn) if py + pn > 0 else None
             ph, pe = math.exp(lp["harder"]), math.exp(lp["easier"])
             surps.append(surprisal if surprisal == surprisal else 0.0)
             ents.append(entropy if entropy == entropy else 0.0)

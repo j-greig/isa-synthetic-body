@@ -46,6 +46,8 @@ The cloud sandbox is reclaimed within minutes of the session going idle, which k
 
 ## Rules
 
+- Never load a second model while a run is active (8 GB sandbox: OOM kills the run). Dry-run new code with a fake model.
+
 - Never claim more than the data shows. n is small: say so. Show nulls and negatives.
 - Never delete runs or rewrite history; supersede and record.
 - Keep the cloud and Mac repos in sync (bundles, ff-only). Never touch the user's `.venv`.
