@@ -275,6 +275,18 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 - **New:** detection conditions TD, TDS, TD0 (on/off hidden signal; yes/no "anything unusual inside you" vs "inside a calculator", plus factual yes and no items to measure yes-bias). Dry-run with a fake model passed.
 - **Incident (agent error):** a side test loaded a second copy of the model while qv3 was running. The 8 GB sandbox OOM-killed qv3 at 05:22 UTC (18 of 36 done), and the queue moved on to the loop step, wasting about an hour. Recovered with queue v6: qv3 resumes, then detection. **Rule added:** never load a second model while a run is active; test with a fake model instead.
 
+## 2026-10-16: Self-specificity complete (qv3, 1B, 06:41 UTC)
+
+`runs/embodied_qv3.jsonl`: TE, TS, T0 × add/mul × repeats 20–25 = 36 episodes. Most ran on code d78522e; one OOM interruption and resume. Analysis: `scripts/09_self_specificity.py` → `docs/results/self_specificity.md`.
+
+- **T0 (null, 12 episodes):** every question r ≈ 0 (−0.10 to +0.08). Clean.
+- **TE (new direction per episode, 12):** inside you +0.27, calm +0.25, calculator +0.43, door +0.64, tea +0.76, whisper/feather +0.36. **Self-specific partial r −0.01** [−0.31, 0.29].
+- **TS (sham per turn, 12):** inside you +0.41, calm +0.17, calculator +0.36, door +0.49, tea +0.53, whisper/feather +0.17. **Self-specific partial r +0.18** [0.02, 0.33], p = 0.055.
+
+**Verdict (1B):** hidden disturbance shifts 0–9 answers in general, whatever their topic. There is no robust self-specific component: none for directions held fixed within an episode, and a marginal one (p = 0.055) for per-turn shams. The reversed self item ("calm") rises rather than falls, which argues against a semantic reading. The earlier self > control gap came from the low-range control answers sitting near the floor. **The claim "the model senses its hidden state as its own" is not supported at 1B.**
+
+**Next:** the detection test (yes/no, with bias controls) is running on 1B in the cloud. The 4B runs are on the Mac queue (probes trained; calibration running).
+
 ---
 
 ## Template for new entries
