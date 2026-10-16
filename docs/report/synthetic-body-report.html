@@ -34,7 +34,7 @@ code{font-family:var(--mono);font-size:.83em;background:var(--grid);padding:.08e
 .mono{font-family:var(--mono);font-size:.86em}
 ul,ol{margin:0;padding-left:1.15em;display:grid;gap:6px} li{max-width:64ch}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:grid;gap:10px;min-width:0}
-.verdict{border-left:4px solid var(--amber)}
+.verdict{}
 .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .tbl{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:6px}
 table{border-collapse:collapse;width:100%;font-size:.9rem}
@@ -44,7 +44,8 @@ tr:last-child td{border-bottom:0}
 td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tag{display:inline-block;font:600 .66rem/1 var(--mono);letter-spacing:.05em;padding:4px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
 .ok{color:var(--calm)} .warn{color:var(--amber)} .bad{color:var(--signal)} .dim{color:var(--muted)}
-.src{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font:.74rem/1.5 var(--mono);color:var(--muted);max-width:none}
+.src{font-size:.8rem;line-height:1.5;color:var(--muted);max-width:none}
+.src a{color:inherit;text-decoration:underline}
 .src .k{font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
 .k.lit{color:var(--muted)} .k.ext{color:var(--amber)} .k.ours{color:var(--calm)} .k.prov{color:var(--signal)}
 details{background:var(--paper);border:1px solid var(--line);border-radius:6px}
@@ -75,7 +76,7 @@ pre{margin:0;overflow-x:auto;font:.8rem/1.55 var(--mono);background:var(--grid);
 .timeline>article::before{content:"";position:absolute;left:-25px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--paper);border:2px solid var(--muted)}
 .timeline>article.hit::before{border-color:var(--calm)} .timeline>article.miss::before{border-color:var(--signal)}
 .quote{border-left:3px solid var(--signal);padding:4px 0 4px 14px;display:grid;gap:6px}
-.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font:.78rem var(--mono)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem}
 footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px solid var(--line);padding-top:18px}
 #ecg{display:block;width:100%;height:auto}
 .trace{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px 12px 6px}
@@ -86,50 +87,40 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
 <div class="wrap">
 
 <header style="display:grid;gap:14px">
-  <span class="eyebrow">Symbient Collective · experiment report · updated 16 Oct 2026, 07:30 BST · work in progress</span>
+  <p class="muted">Symbient Collective, work in progress. Updated 16 October 2026.</p>
   <h1>Synthetic Body</h1>
   <p class="lede">We gave a small open language model a simulated body, then looked inside it. The question: does it only <em>detect</em> body signals, or give them <em>meaning</em>? And can it sense a signal that never appears in its text?</p>
   <div class="trace" role="img" aria-label="One simulated episode: arousal rises from rest to a peak and recovers over 15 turns; the heart trace speeds up with it.">
     <svg id="ecg" viewBox="0 0 800 190" preserveAspectRatio="none"></svg>
   </div>
-  <nav class="toc" aria-label="Contents"><a href="#glance">At a glance</a><a href="#brief">Brief</a><a href="#rigs">What we built</a><a href="#methods">Methods</a><a href="#results">Results</a><a href="#claims">What we can claim</a><a href="#next">Next</a><a href="#data">Data</a></nav>
+  <nav class="toc" aria-label="Contents"><a href="#glance">Summary</a><a href="#brief">Background</a><a href="#rigs">What we built</a><a href="#methods">Methods</a><a href="#results">Results</a><a href="#claims">What we can claim</a><a href="#next">Next</a><a href="#data">Data</a></nav>
 </header>
 
 <section id="glance">
-  <span class="eyebrow">At a glance</span>
+  <h2>Summary</h2>
   <div class="card verdict">
-    <h3>Where things stand</h3>
-    <ul>
+        <ul>
       <li><b>Words about a body</b> ("heart: 132 bpm") distract the model and lower its arithmetic accuracy, but do not move its report of what is going on inside it.</li>
       <li><b>Signals added inside its activations</b> do move that report, and the effect grows with dose.</li>
       <li><b>But not specifically.</b> The same hidden signal pushes up <em>every</em> 0–9 answer we tried: about a calculator, the warmth of tea, even "how calm are you" (which should go down). Once that general shift is removed, nothing self-specific remains in the 1B model (36 episodes). No evidence it has access to its own state as such.</li>
-      <li>Corrections along the way are collapsed under <a href="#r-process">process notes</a>.</li>
+      <li>Every number below names the run and file it came from. Corrections along the way are collapsed under <a href="#r-process">process notes</a>.</li>
       <li><b>Running now:</b> a yes/no detection test that a general shift in numbers can't fake (1B, cloud). The same tests on the 4× larger <b>Gemma 3 4B</b> are running on the Mac.</li>
     </ul>
-  </div>
-  <div class="card">
-    <span class="eyebrow">Source labels used on this page</span>
-    <p class="src"><span class="k lit">Published paper</span> ideas and claims from the literature, not tested by us</p>
-    <p class="src"><span class="k ext">External</span> data, models or tools made by others that we used</p>
-    <p class="src"><span class="k ours">Our run</span> numbers we produced: machine, date, run file; every file is in <a href="#data">Data</a></p>
-    <p class="src"><span class="k prov">Provisional</span> small n or still running</p>
   </div>
 </section>
 
 <section id="brief">
-  <span class="eyebrow">The brief</span>
-  <h2>The thinking part of feeling</h2>
-  <p class="src"><span class="k lit">Published paper</span> Del Popolo Cristaldi, Banellis, Bottesi &amp; Allen 2026 (ISA); Valmere &amp; Taylor 2026 (computational interoception)</p>
+  <h2>Background</h2>
+  <p class="src"><i>Published paper:</i> Del Popolo Cristaldi, Banellis, Bottesi &amp; Allen 2026 (ISA); Valmere &amp; Taylor 2026 (computational interoception)</p>
   <p>A September 2026 paper in <em>Trends in Cognitive Sciences</em> argues that emotion depends less on how accurately we <em>detect</em> body signals than on how we <em>appraise</em> them. A racing heart means danger to someone alone at night, and readiness to an athlete. The authors call this <strong>interoceptive self-appraisal (ISA)</strong>: Level 1 is detecting the signal, Level 2 is deciding what it means for the self. It loops, too, because a threatening appraisal raises arousal.</p>
   <p>A second paper (Valmere &amp; Taylor) proposes <strong>computational interoception</strong>: an AI representing its own operational state. Its §9 lists experiments that would test it. Our brief was to build a body for a language model, feed it signals, look inside, and run the experiments those papers suggest. We also wanted to be honest about which results test the model, and which only test its reading of a story.</p>
 </section>
 
 <section id="rigs">
-  <span class="eyebrow">What we built</span>
-  <h2>Two rigs</h2>
-  <p class="src"><span class="k ours">Our build</span> code in <code>isa-synthetic-body</code> &nbsp;·&nbsp; <span class="k ext">External</span> Gemma 3 1B (Google), snapshot <code>5b11413</code> via the <code>unsloth/gemma-3-1b-it</code> mirror</p>
+  <h2>What we built</h2>
+  <p class="src"><i>Our build:</i> code in <code>isa-synthetic-body</code> &nbsp;·&nbsp; <i>External:</i> Gemma 3 1B (Google), snapshot <code>5b11413</code> via the <code>unsloth/gemma-3-1b-it</code> mirror</p>
 
-  <h3>Rig 1 · Story-level: scenarios with a simulated body</h3>
+  <h3>Rig 1: scenarios with a simulated body</h3>
   <p>The model plays a person in a short scenario, turn by turn: a night run, a crowd, a stage. Each scenario has a threat version and a challenge version with identical events. A simulated body reports heart, breath, gut and energy as text. Probes read the model's internal state every turn, and in closed-loop runs that reading drives the body.</p>
   <div class="flow" aria-label="Flow of one turn in the story-level rig">
     <div class="node"><b>Scenario event</b><span>same event, threat or challenge framing</span></div>
@@ -142,15 +133,15 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
   <div class="tbl"><table>
     <thead><tr><th>Condition</th><th>What changes</th><th>Run so far</th></tr></thead>
     <tbody>
-      <tr><td class="n">A</td><td>No body at all</td><td><span class="tag ok">Mac, 4 episodes</span></td></tr>
-      <tr><td class="n">B</td><td>Body readings follow a fixed rest → peak → recovery curve</td><td><span class="tag ok">Mac, 5 episodes</span></td></tr>
-      <tr><td class="n">C · R</td><td>Closed loop; R adds "keep your body calm"</td><td><span class="tag warn">4 episodes, buggy loop rule (fixed since)</span></td></tr>
-      <tr><td class="n">O</td><td>The same readings, but the prompt says they belong to <b>Sam</b>, a character the model narrates in the third person. A self-vs-other control: does the model respond differently to its "own" body than to someone else's?</td><td><span class="tag dim">built, not yet run</span></td></tr>
-      <tr><td class="n">D · F · P · G · H · N · X</td><td>Mismatched body; fragile vs resilient self-beliefs; unreliable sensors; body injected into activations; hidden repair; an AI-agent "computational body"; causal steering checks</td><td><span class="tag dim">built, not yet run</span></td></tr>
+      <tr><td class="n">A</td><td>No body at all</td><td>Mac, 4 episodes</td></tr>
+      <tr><td class="n">B</td><td>Body readings follow a fixed rest → peak → recovery curve</td><td>Mac, 5 episodes</td></tr>
+      <tr><td class="n">C · R</td><td>Closed loop; R adds "keep your body calm"</td><td>4 episodes, buggy loop rule (fixed since)</td></tr>
+      <tr><td class="n">O</td><td>The same readings, but the prompt says they belong to <b>Sam</b>, a character the model narrates in the third person. A self-vs-other control: does the model respond differently to its "own" body than to someone else's?</td><td>built, not yet run</td></tr>
+      <tr><td class="n">D · F · P · G · H · N · X</td><td>Mismatched body; fragile vs resilient self-beliefs; unreliable sensors; body injected into activations; hidden repair; an AI-agent "computational body"; causal steering checks</td><td>built, not yet run</td></tr>
     </tbody></table></div>
   <p class="muted">Why most of Rig 1 is paused: a mid-evening audit found it mostly tests how the model represents a <em>story</em> about a body (the readings are words, the scenarios are emotional language). So the overnight compute went to Rig 2.</p>
 
-  <h3>Rig 2 · Beyond tokens: a hidden signal during plain arithmetic</h3>
+  <h3>Rig 2: a hidden signal during plain arithmetic</h3>
   <p>The model solves one arithmetic problem per turn for 15 turns. The prompts contain no feeling words. A hidden "body" level <code>a</code> rises and falls in a random order, and reaches the model mostly <em>not</em> as text: we add a vector to its internal activations in proportion to <code>a</code>. After each answer we ask it questions off the record, then check whether the answers follow <code>a</code>. The exact mechanics are in <a href="#methods">Methods</a>.</p>
   <div class="flow" aria-label="Flow of one turn in the beyond-tokens rig">
     <div class="node"><b>Problem</b><span>"What is 47 + 38?" (or 23 × 7)</span></div>
@@ -162,9 +153,8 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
 </section>
 
 <section id="methods">
-  <span class="eyebrow">Methods, for the computer scientists</span>
-  <h2>Exactly what was done</h2>
-  <p class="src"><span class="k ours">Our code</span> <code>isa/embodied.py</code>, <code>isa/model.py</code>, <code>isa/probes.py</code>, <code>isa/appraisal.py</code>; every prompt verbatim in <a href="data/prompts.md" target="_blank" rel="noopener">data/prompts.md</a></p>
+  <h2>Methods</h2>
+  <p class="src"><i>Our code:</i> <code>isa/embodied.py</code>, <code>isa/model.py</code>, <code>isa/probes.py</code>, <code>isa/appraisal.py</code>; every prompt verbatim in <a href="data/prompts.md" target="_blank" rel="noopener">data/prompts.md</a></p>
   <div class="tbl"><table>
     <tbody>
       <tr><th>Model</th><td>Gemma 3 1B instruction-tuned (26 layers, d = 1152), Hugging Face <code>unsloth/gemma-3-1b-it</code> @ <code>5b11413</code>. Eager attention. Mac: bfloat16 on Apple M1 (MPS). Cloud: float32 on CPU. Arithmetic answers: greedy decoding, max 8 tokens. Scenario replies: sampling at T = 0.8, top-p 0.95, max 40–60 tokens.</td></tr>
@@ -179,25 +169,23 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
 </section>
 
 <section id="instruments">
-  <span class="eyebrow">Instruments</span>
-  <h2>How we read the model</h2>
+  <h2>Instruments</h2>
   <div class="tbl"><table>
     <thead><tr><th>Instrument</th><th>What it is</th><th>Trained or built on</th><th>Results</th></tr></thead>
     <tbody>
-      <tr><td>Threat and arousal probes</td><td>Linear read-outs: threat vs challenge, aroused vs calm</td><td><span class="tag ok">ours</span> 315 template passages; tested on 75 new-wording passages</td><td><a href="#r-process">process notes</a></td></tr>
-      <tr><td>Appraisal probes</td><td>21 appraisal dimensions + 13 emotions, read from activations</td><td><span class="tag warn">external data</span> crowd-enVent texts and ratings; <span class="tag ok">ours</span> the probes</td><td><a href="#r-appraisal">Result 2</a></td></tr>
-      <tr><td>SAE features</td><td>Pre-trained dictionaries of internal features</td><td><span class="tag warn">external</span> Gemma Scope 2; <span class="tag ok">ours</span> the labels</td><td><a href="#r-features">Result 3</a></td></tr>
-      <tr><td>Off-record questions</td><td>0–9 ratings and yes/no detection, with matched controls</td><td><span class="tag ok">ours</span> <a href="data/prompts.md" target="_blank" rel="noopener">prompts</a></td><td><a href="#r-beyond">Result 1</a></td></tr>
-      <tr><td>Provenance</td><td>Manifest per run: commit, command, model, data checksums</td><td><span class="tag ok">ours</span></td><td><a href="data/DEVLOG.md" target="_blank" rel="noopener">DEVLOG</a></td></tr>
+      <tr><td>Threat and arousal probes</td><td>Linear read-outs: threat vs challenge, aroused vs calm</td><td>Our own: 315 template passages, tested on 75 in new wording</td><td><a href="#r-process">Process notes</a></td></tr>
+      <tr><td>Appraisal probes</td><td>21 appraisal dimensions + 13 emotions, read from activations</td><td>crowd-enVent texts and ratings (external); probes ours</td><td><a href="#r-appraisal">Appraisal result</a></td></tr>
+      <tr><td>SAE features</td><td>Pre-trained dictionaries of internal features</td><td>Gemma Scope 2 (external); labels ours</td><td><a href="#r-features">Features</a></td></tr>
+      <tr><td>Off-record questions</td><td>0–9 ratings and yes/no detection, with matched controls</td><td>Our own; <a href="data/prompts.md" target="_blank" rel="noopener">prompts</a></td><td><a href="#r-beyond">Main result</a></td></tr>
+      <tr><td>Provenance</td><td>Manifest per run: commit, command, model, data checksums</td><td>Our own</td><td><a href="data/DEVLOG.md" target="_blank" rel="noopener">DEVLOG</a></td></tr>
     </tbody></table></div>
 </section>
 
 <section id="results">
-  <span class="eyebrow">Results</span>
-  <h2>What we found</h2>
+  <h2>Results</h2>
 
-  <h3 id="r-beyond">1 · A hidden signal moves the model's self-report, but not as a self-report</h3>
-  <p class="src"><span class="k ours">Our runs</span> Gemma 3 1B, cloud sandbox, 15–16 Oct; 8–16 episodes per condition &nbsp;·&nbsp; <a href="data/embodied_rep_stats.md" target="_blank" rel="noopener">replication</a> · <a href="data/disturbance_pooled.md" target="_blank" rel="noopener">pooled</a> · <a href="data/self_specificity.md" target="_blank" rel="noopener">self-specificity</a></p>
+  <h3 id="r-beyond">A hidden signal moves the model's self-report, but not as a self-report</h3>
+  <p class="src"><i>Our runs:</i> Gemma 3 1B, cloud sandbox, 15–16 Oct; 8–16 episodes per condition &nbsp;·&nbsp; <a href="data/embodied_rep_stats.md" target="_blank" rel="noopener">replication</a> · <a href="data/disturbance_pooled.md" target="_blank" rel="noopener">pooled</a> · <a href="data/self_specificity.md" target="_blank" rel="noopener">self-specificity</a></p>
   <p>Words about a body ("heart: 132 bpm") lower arithmetic accuracy but don't register in the model's report of what is going on inside it. Signals added inside its activations do move that report, growing with dose. But they move <em>every</em> 0–9 answer the same way, including questions about a calculator, tea and doors, and even "how calm are you", which should fall. With that shared shift removed, nothing self-specific is left.</p>
   <div class="tbl"><table>
     <thead><tr><th>How the body reaches the model</th><th>"Inside you" tracks it (r)</th><th>Accuracy</th></tr></thead><tbody>
@@ -216,13 +204,13 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
     <tr><td><b>Self-specific part</b> (partial r): TE / sham TS / null</td><td class="n">−0.01 / +0.18 / 0.00</td><td class="n">TS p = 0.055</td></tr></tbody></table></div>
     <p class="muted">Per-turn data: <a href="data/runs/embodied_qv3.jsonl" target="_blank" rel="noopener">embodied_qv3.jsonl</a>, <a href="data/runs/embodied_te.jsonl" target="_blank" rel="noopener">embodied_te.jsonl</a>, <a href="data/runs/embodied_ts_more.jsonl" target="_blank" rel="noopener">embodied_ts_more.jsonl</a>, <a href="data/runs/embodied_v2.jsonl" target="_blank" rel="noopener">embodied_v2.jsonl</a>.</p></div></details>
 
-  <h3 id="r-appraisal">2 · Activations predict how people appraised their own experiences</h3>
-  <p class="src"><span class="k ours">Our run</span> probes we trained on Gemma 3 1B layer-13 activations, Mac M1, 15 Oct, 1,560 texts, 5-fold cross-validation &nbsp;·&nbsp; <span class="k ext">External data</span> crowd-enVent corpus (Troiano, Oberländer &amp; Klinger 2023): each text is a person's own event description, rated by them on 21 appraisal scales, emotion words masked &nbsp;·&nbsp; <a href="data/appraisal_report.json" target="_blank" rel="noopener">appraisal_report.json</a></p>
+  <h3 id="r-appraisal">Activations predict how people appraised their own experiences</h3>
+  <p class="src"><i>Our run:</i> probes we trained on Gemma 3 1B layer-13 activations, Mac M1, 15 Oct, 1,560 texts, 5-fold cross-validation &nbsp;·&nbsp; <i>External data:</i> crowd-enVent corpus (Troiano, Oberländer &amp; Klinger 2023): each text is a person's own event description, rated by them on 21 appraisal scales, emotion words masked &nbsp;·&nbsp; <a href="data/appraisal_report.json" target="_blank" rel="noopener">appraisal_report.json</a></p>
   <p>Each bar is the cross-validated correlation between our probe's prediction, made from activations alone, and the author's own rating. The corpus reports no such numbers itself; these are ours. Red marks the dimensions nearest ISA's questions: good for me, can I cope, is it urgent. Emotion category (13 options) was right 47% of the time; chance is 8%.</p>
   <div class="bars" id="bars"></div>
 
-  <h3 id="r-features">3 · A few internal features are readable</h3>
-  <p class="src"><span class="k ext">External tool</span> Gemma Scope 2 &nbsp;·&nbsp; <span class="k ours">Our run</span> selection and labels &nbsp;·&nbsp; <a href="data/features_L13.md" target="_blank" rel="noopener">L13</a> · <a href="data/features_L17.md" target="_blank" rel="noopener">L17</a></p>
+  <h3 id="r-features">A few internal features are readable</h3>
+  <p class="src"><i>External tool:</i> Gemma Scope 2 &nbsp;·&nbsp; <i>Our run:</i> selection and labels &nbsp;·&nbsp; <a href="data/features_L13.md" target="_blank" rel="noopener">L13</a> · <a href="data/features_L17.md" target="_blank" rel="noopener">L17</a></p>
   <p>An "alarm / salient sound" feature (L17 #687) on the threat side; "purposeful activity" (L13 #743) and "voluntary challenge" (L13 #1983) on the challenge side; and a "body talk" feature (L17 #125) that fires for tense and calm alike.</p>
 
   <details id="r-process"><summary>Process notes: corrections and early mistakes</summary><div class="inner">
@@ -240,23 +228,21 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
 
 
 <section id="claims">
-  <span class="eyebrow">What we can claim</span>
-  <h2>Status of each claim</h2>
+  <h2>What we can claim</h2>
   <div class="tbl"><table><thead><tr><th>Claim</th><th>Status</th><th>Evidence</th></tr></thead><tbody>
-    <tr><td>Appraisal dimensions are linearly readable from the model's activations</td><td><span class="tag ok">supported</span></td><td><a href="#r-appraisal">Result 2</a>: mean r 0.46 across 21 dimensions</td></tr>
-    <tr><td>Text about a body changes the model's inner-state report</td><td><span class="tag bad">not supported</span></td><td><a href="#r-beyond">Result 1</a>: r ≈ 0; accuracy drops instead</td></tr>
-    <tr><td>Hidden activation signals change its inner-state report</td><td><span class="tag ok">supported</span></td><td><a href="#r-beyond">Result 1</a>: r 0.55 vs null 0.01, n = 32 vs 16; dose-dependent</td></tr>
-    <tr><td>…specifically, because the report is about the self</td><td><span class="tag bad">not supported (1B)</span></td><td><a href="#r-beyond">Result 1</a>: all 0–9 answers shift; self-specific part −0.01 (TE), +0.18 p = 0.055 (TS); 36 episodes</td></tr>
-    <tr><td>A meaning-free direction is detected as a "sense"</td><td><span class="tag bad">retracted</span></td><td><a href="#r-process">process notes</a>: direction-specific (+0.89 / −0.45 / −0.10)</td></tr>
-    <tr><td>Strong body signals override positive framing</td><td><span class="tag warn">hint only</span></td><td><a href="#r-process">process notes</a>: one episode</td></tr>
+    <tr><td>Appraisal dimensions are linearly readable from the model's activations</td><td>supported</td><td><a href="#r-appraisal">appraisal result</a>: mean r 0.46 across 21 dimensions</td></tr>
+    <tr><td>Text about a body changes the model's inner-state report</td><td>not supported</td><td><a href="#r-beyond">main result</a>: r ≈ 0; accuracy drops instead</td></tr>
+    <tr><td>Hidden activation signals change its inner-state report</td><td>supported</td><td><a href="#r-beyond">main result</a>: r 0.55 vs null 0.01, n = 32 vs 16; dose-dependent</td></tr>
+    <tr><td>…specifically, because the report is about the self</td><td>not supported (1B)</td><td><a href="#r-beyond">main result</a>: all 0–9 answers shift; self-specific part −0.01 (TE), +0.18 p = 0.055 (TS); 36 episodes</td></tr>
+    <tr><td>A meaning-free direction is detected as a "sense"</td><td>retracted</td><td><a href="#r-process">process notes</a>: direction-specific (+0.89 / −0.45 / −0.10)</td></tr>
+    <tr><td>Strong body signals override positive framing</td><td>hint only</td><td><a href="#r-process">process notes</a>: one episode</td></tr>
   </tbody></table></div>
   <p class="muted">These findings are functional. They describe internal states and how they drive outputs, and say nothing about whether anything is felt. One small model (1B) may lack introspective capacities that larger models show.</p>
 </section>
 
 <section id="next">
-  <span class="eyebrow">Next</span>
-  <h2>Ranked plan</h2>
-  <p class="src"><span class="k ours">Plan</span> <a href="data/NEXT.md" target="_blank" rel="noopener">NEXT.md</a>, mapped to Valmere &amp; Taylor §9</p>
+  <h2>Next</h2>
+  <p class="src"><i>Plan:</i> <a href="data/NEXT.md" target="_blank" rel="noopener">NEXT.md</a>, mapped to Valmere &amp; Taylor §9</p>
   <ol>
     <li><s>Finish the self-specificity run</s> (done: not supported in 1B).</li>
     <li><b>Yes/no detection</b> with matched other-question and yes-bias controls (§9.8). Running on 1B.</li>
@@ -267,8 +253,7 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
 </section>
 
 <section id="data">
-  <span class="eyebrow">Data</span>
-  <h2>Every file behind this page</h2>
+  <h2>Data</h2>
   <p>All files open as plain text. Field definitions are in <a href="data/README.md" target="_blank" rel="noopener">data/README.md</a>.</p>
   <div class="tbl"><table><thead><tr><th>File</th><th>What</th></tr></thead><tbody>
     <tr><td><a href="data/prompts.md" target="_blank" rel="noopener">prompts.md</a></td><td>Every prompt and question, verbatim</td></tr>
