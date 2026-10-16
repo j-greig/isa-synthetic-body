@@ -348,3 +348,9 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 - Dry run on a tiny random Gemma 3: the cached one-token steering path matches a full forward pass to 1e-6 (with and without steering, sliding window shorter than the prompt). Note the tiny model's random directions all shift the labels the same way, which is exactly why the random null is needed.
 - crowd-enVent per-emotion appraisal means computed (`docs/results/appraisal_profiles.md`).
 - Queued: 1B in the cloud after the detection run; 4B on the Mac after the localisation pilots.
+
+## 2026-10-16 ~13:30 UTC: experiment C (valence readout) built
+
+- `isa/localise.py`: framings `val_self` ("how did it feel to you inside: good or bad?") and `val_other` ("are these sentences good news or bad news?"); answer p(good) from first-token probabilities over good/bad variants. `scripts/12_localise.py --concept_from artifacts/<run>/directions.npz:<appraisal>:<layer>` uses an appraisal direction from the C0 replication instead of arousal. Analysis in `13_localise_stats.py`: antisymmetric (+v vs −v)/2 effect per item, so a generic shift cancels; self − other paired.
+- Dry run on the tiny model passed. Runs once C0 has produced directions.
+- Queue v6's story-level loop step will be skipped (watcher `skiploop.sh`) so Phase 2 starts as soon as the detection run ends.

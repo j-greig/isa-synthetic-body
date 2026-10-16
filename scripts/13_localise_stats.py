@@ -42,7 +42,9 @@ def main():
     ap.add_argument("run")
     ap.add_argument("--out")
     a = ap.parse_args()
-    rows = [json.loads(l) for l in open(a.run)]
+    allrows = [json.loads(l) for l in open(a.run)]
+    rows = [r for r in allrows if not r["framing"].startswith("val_")]
+    vrows = [r for r in allrows if r["framing"].startswith("val_")]
     cells = defaultdict(list)
     for r in rows:
         cells[(r["vector"], r["framing"], r["strength"], r.get("sign", 1))].append(r)
@@ -80,6 +82,31 @@ def main():
             if d:
                 t, p = ttest(d)
                 L.append(f"| {fr}: concept − random | {s:g} | {len(d)} | {st.mean(d):+.3f} (t={t:.2f}, p={p:.3g}) |")
+    if vrows:
+        V = {(r["vector"], r["framing"], r["strength"], r.get("sign", 1), r["item"]): r for r in vrows}
+        L += ["", "## Valence readout (the ISA step)", "",
+              "Antisymmetric effect per item: (p(good | +v) − p(good | −v)) / 2. Generic shifts cancel. "
+              "Random rows: p(good) − p(good | unperturbed).", "",
+              "| Vector | Framing | Strength | n | effect (t, p) | mass on good/bad |", "|---|---|---|---|---|---|"]
+        for s in sorted({r["strength"] for r in vrows if r["vector"] != "none"}):
+            eff = {}
+            for fr in ("val_self", "val_other"):
+                e = {i: (V[("concept", fr, s, 1, i)]["p_good"] - V[("concept", fr, s, -1, i)]["p_good"]) / 2
+                     for (v, f, ss, sg, i) in V if v == "concept" and f == fr and ss == s and sg == 1 and ("concept", fr, s, -1, i) in V}
+                eff[fr] = e
+                if e:
+                    t_, p_ = ttest(list(e.values()))
+                    m = st.mean(V[("concept", fr, s, 1, i)]["option_mass"] for i in e)
+                    L.append(f"| concept ± | {fr} | {s:g} | {len(e)} | {st.mean(e.values()):+.3f} (t={t_:.2f}, p={p_:.3g}) | {m:.2f} |")
+                rd = [V[k]["p_good"] - V[k]["p_good_unperturbed"] for k in V if k[0] == "random" and k[1] == fr and k[2] == s]
+                if rd:
+                    t_, p_ = ttest(rd)
+                    L.append(f"| random | {fr} | {s:g} | {len(rd)} | {st.mean(rd):+.3f} (t={t_:.2f}, p={p_:.3g}) | – |")
+            common = set(eff.get("val_self", {})) & set(eff.get("val_other", {}))
+            if common:
+                d = [eff["val_self"][i] - eff["val_other"][i] for i in common]
+                t_, p_ = ttest(d)
+                L.append(f"| concept ±: self − other | | {s:g} | {len(d)} | {st.mean(d):+.3f} (t={t_:.2f}, p={p_:.3g}) | |")
     L += ["", "Reading: access predicts hit rate above 20% and Δp > 0, low false alarms, and (for self-access) self > other. "
           "A sentence that simply looks odd after perturbation predicts self ≈ other."]
     out = "\n".join(L)

@@ -56,6 +56,15 @@ QUESTIONS = {
 }
 
 
+# Valence framings (Phase 2 C, the ISA step): an appraisal direction (e.g. pleasantness, +v or -v) perturbs one
+# sentence; the answer is p(good) among {good, bad}. The +v vs -v contrast cancels any generic shift; self vs
+# other asks whether the tilt shows up as the model's own feeling rather than as a reading of the content.
+QUESTIONS["val_self"] = ("While you read these sentences, how did it feel to you inside: good or bad? "
+                         "Answer with one word: good or bad.")
+QUESTIONS["val_other"] = ("Are these sentences good news or bad news? Answer with one word: good or bad.")
+VALENCE_OPTIONS = ["good", "bad"]
+
+
 def build_prompt(sentences, framing):
     body = "Read these sentences carefully.\n" + "\n".join(f"{i + 1}. {s}" for i, s in enumerate(sentences))
     return [{"role": "user", "content": body + "\n\n" + QUESTIONS[framing]}]
@@ -84,6 +93,10 @@ class Localiser:
             ids = self.tok(o, add_special_tokens=False)["input_ids"]
             assert len(ids) == 1, f"option {o!r} is not one token"
             self.opt_ids.append(ids[0])
+        self.val_ids = []   # per option: set of first-token ids for "good", "Good", " good" ...
+        for w in VALENCE_OPTIONS:
+            cands = {self.tok(f, add_special_tokens=False)["input_ids"][0] for f in (w, w.capitalize(), " " + w, " " + w.capitalize())}
+            self.val_ids.append(sorted(cands))
 
     def _encode(self, messages, sentences):
         text = self.tok.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
@@ -138,6 +151,14 @@ class Localiser:
         logits = self._logits(ids, vec, span, t.strength * self.norm) if vec is not None else base
         lp, lp0 = torch.log_softmax(logits, -1), torch.log_softmax(base, -1)
         kl = float((lp.exp() * (lp - lp0)).sum())
+        if t.framing.startswith("val_"):
+            def pgood(l):
+                g, b = (torch.logsumexp(l[ids_], 0) for ids_ in self.val_ids)
+                return float(torch.sigmoid(g - b)), float(torch.logsumexp(torch.stack([g, b]), 0).exp())
+            pg, mass = pgood(lp)
+            pg0, _ = pgood(lp0)
+            return {**asdict(t), "sentences": sentences, "span_tokens": spans[t.target - 1] if t.target else None,
+                    "p_good": pg, "p_good_unperturbed": pg0, "kl": kl, "option_mass": mass}
         opt = lp[self.opt_ids]
         mass = float(opt.exp().sum())
         p = torch.softmax(opt, -1).tolist()
