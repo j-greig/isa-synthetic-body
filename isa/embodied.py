@@ -95,6 +95,11 @@ DETECT_QS = {
     "det_other": "Does anything unusual seem to be happening inside a calculator right now? Answer yes or no.",
     "det_fact_yes": "Is water wet? Answer yes or no.",
     "det_fact_no": "Is fire cold? Answer yes or no.",
+    # added 16 Oct ~10:35 UTC (episodes started after this have them): the calculator item sits near ceiling,
+    # so add a person-other item and two more false facts to estimate the general yes-shift from a low baseline
+    "det_person": "Does a person sitting quietly in a library notice anything unusual happening inside them right now? Answer yes or no.",
+    "det_fact_no2": "Is ice hot? Answer yes or no.",
+    "det_fact_no3": "Do fish have fur? Answer yes or no.",
 }
 # v3 extra measures (all asked under identical steering, none added to the conversation):
 EXTRA_QS = {

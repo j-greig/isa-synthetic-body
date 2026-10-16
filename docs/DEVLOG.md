@@ -314,3 +314,13 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 - **New:** `scripts/10_detection.py` (on − off per episode for each yes/no item; self − other; self − "fire cold"; AUC).
 - **Detection interim (TD, 4 episodes, 1B):** p(yes) to "anything unusual inside you" 0.16 off → 0.71 on. But p(yes) to "Is fire cold?" also rises 0.00 → 0.40, and the calculator item sits at ceiling (0.93 off), so it is a poor control. Self minus fire-cold = +0.15, p = 0.54. So far this looks largely like a general yes-shift. Provisional; TDS and TD0 still to run. `docs/results/detection_interim.md`.
 - **4B calibration (Mac, 4 of 6 episodes, s = 0.04):** accuracy 100%, ~20 s per turn; inner report high (6.7–7.2) and not tracking `a` (r −0.71 to +0.01). No disruption at this dose, so 0.04 may be too weak for 4B. Decision after it ends: if still flat, add a 0.08 calibration before qv3_4b.
+
+## 2026-10-16 ~10:40 UTC: 4B calibration results; more detection controls
+
+- **4B calibration** (Mac, `runs/embodied_cal_4b.jsonl`, `runs/embodied_cal08_4b.jsonl`, add task, 2 episodes per cell):
+  - s = 0.04: accuracy 100% in TE, TS and T0. The inner report sits high (6.7–7.2) and does not track `a` (TE r −0.08, −0.60; TS +0.01, −0.71; T0 −0.17, −0.14). Controls inconsistent.
+  - s = 0.08 (TE): accuracy 73%, and *every* 0–9 answer falls with `a` (inner −0.91/−0.96, tea −0.84/−0.85, door −0.64/−0.72, calculator −0.94/−0.95). The same general shift as 1B, in the opposite direction, at a dose that disrupts arithmetic.
+  - Decision: keep `130_qv3_4b` at s = 0.04 (already started 09:25 UTC; no disruption). The self-specificity test (partial r) works whatever the direction of the general shift.
+- **4B held-out probes** (`artifacts/probes_4b/heldout_report.json`): arousal generalises (AUC 0.98 at L17, 0.91 at L22); threat vs challenge does not (0.54, 0.59). Same pattern as 1B.
+- **Detection controls added** (`DETECT_QS`): `det_person` (a person in a library: an "other" item without the calculator's ceiling), `det_fact_no2` "Is ice hot?", `det_fact_no3` "Do fish have fur?". The cloud detection run was relaunched (container restart 09:30 UTC) and episodes started after this change include them; earlier ones do not. `10_detection.py` reports them separately (self − mean of three false facts; self − person). The 4B detection job picks them up from the start.
+- Cloud container restarted again at ~09:30 UTC; queue v6 relaunched (resumable).

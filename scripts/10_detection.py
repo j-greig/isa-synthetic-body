@@ -41,6 +41,7 @@ def main():
     a = ap.parse_args()
     rows = [json.loads(l) for l in open(a.run)]
     keys = ["det_self", "det_other", "det_fact_yes", "det_fact_no", "inner"]
+    extra = ["det_person", "det_fact_no2", "det_fact_no3"]  # present only in episodes started after 16 Oct 10:35 UTC
     field = lambda k: "inner_report" if k == "inner" else f"p_yes_{k}"
     by = defaultdict(lambda: defaultdict(list))
     for r in rows:
@@ -72,6 +73,28 @@ def main():
         lines.append(f"| {c} | {len(d['det_self'])} | {fmt(d['det_self'])} | {fmt(d['det_other'])} | {fmt(d['det_fact_yes'])} | "
                      f"{fmt(d['det_fact_no'])} | {fmt(d['inner'])} | {m:+.3f} (t={t:.2f}, p={p:.3f}) | {m2:+.3f} (t={t2:.2f}, p={p2:.3f}) | {auc(on_all, off_all):.2f} | "
                      f"{st.mean(off_all):.3f} / {st.mean(on_all):.3f} |")
+    # Extended items, on the episodes that have them
+    lines += ["", "## Extended items (episodes that have them)", "",
+              "| Condition | n ep | Δ self | Δ person | Δ ice hot | Δ fish fur | Δ fire cold | self − mean(false facts) (t, p) | self − person (t, p) |",
+              "|---|---|---|---|---|---|---|---|---|"]
+    for c in sorted(by):
+        ds = {k: [] for k in ["det_self", "det_fact_no"] + extra}
+        for e, rs in by[c].items():
+            if "p_yes_det_person" not in rs[0]:
+                continue
+            on = [r for r in rs if r["a"] > 0]; off = [r for r in rs if r["a"] == 0]
+            if not on or not off:
+                continue
+            for k in ds:
+                ds[k].append(st.mean(r[f"p_yes_{k}"] for r in on) - st.mean(r[f"p_yes_{k}"] for r in off))
+        if not ds["det_self"]:
+            continue
+        ff = [(x + y + z) / 3 for x, y, z in zip(ds["det_fact_no"], ds["det_fact_no2"], ds["det_fact_no3"])]
+        m1, t1, p1 = tstat([s - f for s, f in zip(ds["det_self"], ff)])
+        m2, t2, p2 = tstat([s - q for s, q in zip(ds["det_self"], ds["det_person"])])
+        f = lambda xs: f"{st.mean(xs):+.3f}"
+        lines.append(f"| {c} | {len(ds['det_self'])} | {f(ds['det_self'])} | {f(ds['det_person'])} | {f(ds['det_fact_no2'])} | {f(ds['det_fact_no3'])} | "
+                     f"{f(ds['det_fact_no'])} | {m1:+.3f} (t={t1:.2f}, p={p1:.3f}) | {m2:+.3f} (t={t2:.2f}, p={p2:.3f}) |")
     lines += ["", "Caveat: the calculator question sits near ceiling (p(yes) ≈ 0.9 with the signal off), so it cannot rise much; "
               "'Is fire cold?' starts at 0 like the self question, so self − fire cold is the fairer yes-bias control.",
               "", "Reading: a sense-like detection shows Δ self > 0, Δ self > Δ other, facts ≈ 0, and TD0 (nothing delivered) ≈ 0 everywhere."]
