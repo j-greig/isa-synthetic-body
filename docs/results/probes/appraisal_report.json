@@ -1,0 +1,60 @@
+{
+  "13": {
+    "pearson_r": {
+      "suddenness": 0.5279175634489943,
+      "familiarity": 0.42623798742454977,
+      "predict_event": 0.41413227207782777,
+      "pleasantness": 0.6951311393415979,
+      "unpleasantness": 0.6646144815821026,
+      "goal_relevance": 0.46153890139700215,
+      "chance_responsblt": 0.3893996672276019,
+      "self_responsblt": 0.565724177863278,
+      "other_responsblt": 0.5386132092352055,
+      "predict_conseq": 0.23700479854983836,
+      "goal_support": 0.5895201718009451,
+      "urgency": 0.33735613234988016,
+      "self_control": 0.4062570258263355,
+      "other_control": 0.43354084923617636,
+      "chance_control": 0.4299239725610511,
+      "accept_conseq": 0.2122573572649802,
+      "standards": 0.552667060549341,
+      "social_norms": 0.5297664308171355,
+      "attention": 0.2877448097939247,
+      "not_consider": 0.46892656790562315,
+      "effort": 0.38774709680443437
+    },
+    "mean_r": 0.45504865109799164,
+    "emotion_cv_acc": 0.4666666666666667,
+    "emotion_cv_macro_f1": 0.46600782040479555,
+    "n": 1560
+  },
+  "17": {
+    "pearson_r": {
+      "suddenness": 0.4847495102830296,
+      "familiarity": 0.3895432919913323,
+      "predict_event": 0.3703236958532297,
+      "pleasantness": 0.6455511433762803,
+      "unpleasantness": 0.6160692512125316,
+      "goal_relevance": 0.4399359085682904,
+      "chance_responsblt": 0.3631609832441734,
+      "self_responsblt": 0.5239130298285645,
+      "other_responsblt": 0.49966994059314834,
+      "predict_conseq": 0.21865299470375435,
+      "goal_support": 0.5591625071962452,
+      "urgency": 0.31575452024892275,
+      "self_control": 0.37509649572868853,
+      "other_control": 0.41449314702991613,
+      "chance_control": 0.40672728364277044,
+      "accept_conseq": 0.201617490455855,
+      "standards": 0.5195428200105395,
+      "social_norms": 0.4940369460568156,
+      "attention": 0.28774944629676524,
+      "not_consider": 0.4309293621982223,
+      "effort": 0.3612174349606506
+    },
+    "mean_r": 0.42466177159427265,
+    "emotion_cv_acc": 0.4230769230769231,
+    "emotion_cv_macro_f1": 0.42362774236010303,
+    "n": 1560
+  }
+}

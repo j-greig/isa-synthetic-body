@@ -4,7 +4,8 @@ __pycache__/
 *.pyc
 .DS_Store
 artifacts/
-runs/
+runs/*
+!runs/*.jsonl
 data/crowd-enVent/
 queue/pending/
 queue/running/

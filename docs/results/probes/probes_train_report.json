@@ -1,0 +1,17 @@
+{
+  "7": {
+    "appraisal_test_acc": 1.0,
+    "arousal_test_acc": 1.0,
+    "token_norm": 2037.8294185577877
+  },
+  "13": {
+    "appraisal_test_acc": 1.0,
+    "arousal_test_acc": 1.0,
+    "token_norm": 7023.682336619544
+  },
+  "17": {
+    "appraisal_test_acc": 1.0,
+    "arousal_test_acc": 1.0,
+    "token_norm": 9406.40288938492
+  }
+}

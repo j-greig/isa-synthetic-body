@@ -300,3 +300,10 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 **Results:**
 **Decisions:**
 ```
+
+## 2026-10-16 ~09:05 UTC: publish data in the repo (prep for public repo)
+
+- Per-turn run files (`runs/*.jsonl`, 13 MB) are now tracked; hidden-state `.npy` dirs stay ignored. Probe reports copied to `docs/results/probes/`. crowd-enVent stays ignored (no licence).
+- Secrets scan of full history: none found. Commit author emails and `/Users/james` paths in two manifests will be visible if the repo goes public.
+- Mac 4B queue: `120_calibrate_4b` was interrupted at 06:44 UTC (KeyboardInterrupt, runner stopped). Moved back to `queue/pending`; needs the runner restarted.
+- Cloud: qv3 finished 08:56 UTC; detection test (TD, TDS, TD0) started, resumed after another container restart.

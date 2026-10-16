@@ -1,0 +1,50 @@
+{
+  "13": {
+    "all": {
+      "threat_vs_challenge_auc": 0.544,
+      "arousal_vs_calm_auc": 0.832
+    },
+    "mean_threat_score": {
+      "threat": -0.5341778469085693,
+      "challenge": -0.7199489450454712,
+      "calm": -0.7919319224357605
+    },
+    "mean_arousal_score": {
+      "threat": 1.2281117296218873,
+      "challenge": 1.1550177717208863,
+      "calm": 0.6365538346767425
+    },
+    "nobody": {
+      "threat_vs_challenge_auc": 0.52,
+      "arousal_vs_calm_auc": 0.9
+    },
+    "nosit": {
+      "threat_vs_challenge_auc": 0.4081632653061224,
+      "arousal_vs_calm_auc": 0.8367346938775511
+    }
+  },
+  "17": {
+    "all": {
+      "threat_vs_challenge_auc": 0.6928,
+      "arousal_vs_calm_auc": 0.9728
+    },
+    "mean_threat_score": {
+      "threat": 0.7819138097763062,
+      "challenge": 0.1873949098587036,
+      "calm": 0.2858126258850098
+    },
+    "mean_arousal_score": {
+      "threat": 0.9208056569099426,
+      "challenge": 0.9344594663381577,
+      "calm": 0.3107171969115734
+    },
+    "nobody": {
+      "threat_vs_challenge_auc": 0.84,
+      "arousal_vs_calm_auc": 1.0
+    },
+    "nosit": {
+      "threat_vs_challenge_auc": 0.6122448979591837,
+      "arousal_vs_calm_auc": 1.0
+    }
+  }
+}
