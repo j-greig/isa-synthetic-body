@@ -256,6 +256,18 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 
 **Reading.** That hidden disturbance raises the self-report is solid (n = 32 vs 16). That it raises the self-report *more than* an unrelated 0–9 answer is supported within disturbed episodes (p ≈ 0.01). It is not clearly beyond the small inner–control gap that exists even with no disturbance (p = 0.19). **Verdict: probable, not established.** The next design needs more control questions (several self-unrelated scales) and more episodes, or a within-turn comparison.
 
+## 2026-10-16: High dose (04:05 UTC)
+
+`runs/embodied_dose008.jsonl`: TR and TS at double strength (0.08) × add/mul × repeats 2–3. 8 episodes; one interrupted by a queue switch, then resumed. Code 115f9d2 → d78522e (the change only added questions). Stats in `docs/results/embodied_dose008_stats.md`.
+
+| Dose | TS inner r | TS control r | TS accuracy | TR inner r | TR control r |
+|---|---|---|---|---|---|
+| 0.02 | 0.33 | −0.06 | 0.98 | 0.66 | −0.54 |
+| 0.04 | 0.52 (n = 16) | 0.28 | 0.96 | 0.89 | 0.03 |
+| 0.08 | 0.29 | **0.65** | **0.72** | 0.70 | **0.76** |
+
+**Reading.** At double dose the disturbance becomes general disruption: accuracy falls and the unrelated control question tracks the signal *more* than the self question does. Any self-preferential effect lives in a narrow, gentle range (≈0.02–0.04), with an inverted-U shape. That fits "registers as something going on" at low intensity, and "everything gets pushed around" at high intensity.
+
 ---
 
 ## Template for new entries
