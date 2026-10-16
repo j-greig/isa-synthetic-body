@@ -14,3 +14,4 @@ logs/pipeline_*.log
 logs/jobs/
 logs/status.md
 logs/env_check/
+queue/held/

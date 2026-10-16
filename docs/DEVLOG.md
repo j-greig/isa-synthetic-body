@@ -333,3 +333,10 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
   - 1B: **not supported**. Spread *rises* with `a` (TS r +0.40, p = 0.001, 12 episodes; TE +0.29, p = 0.18; T0 −0.02). In 1B all answers rise, low-baseline ones (tea, door) most, so it is a general upward bias rather than convergence.
   - So the "everything shifts" artefact is real in both models, but its form differs; convergence explains 4B, not 1B.
 - **Logging added:** full 0–9 distributions (`dist_*`) and digit-token mass (`mass_*`) for every scale question, via `LM.digit_dist`. Dry-run with a fake LM passed. First real use: the 4B detection job. Copied the 4B calibration runs into `runs/`.
+
+## 2026-10-16 ~12:30 UTC: Phase 2 starts (course correction)
+
+- Literature check by three research agents: `docs/LITERATURE.md`. Yes/no and rating self-reports after steering are a known global-shift confound in every open-model study with controls; differential tasks (localisation, strength comparison) are the accepted fix, with untrained effects from about 3B.
+- Plan written before running: `docs/NEXT.md` (Phase 2: A localisation, B strength comparison, C appraisal readout, D sweeps, E optional LoRA).
+- Built experiment A: `isa/localise.py`, `scripts/12_localise.py`, `scripts/13_localise_stats.py`. One forward pass per trial plus an unperturbed pass; the vector is added only on the tokens of one of five numbered arithmetic sentences (or none); answer read from first-token probabilities over 0–5; self vs "most unusual" framing; concept (arousal) ±v vs isotropic random directions, paired by item. Dry run on a tiny randomly initialised Gemma 3 with the real tokenizer: spans decode to the right sentence, unperturbed KL = 0, analysis runs; the random model is at chance as expected.
+- `140_detect_4b` moved to `queue/held/` (superseded). Queued on the Mac after `130_qv3_4b`: 4B localisation pilot at layer 9 (26% depth) and layer 22 (65% depth), 40 trials per cell, strengths 0.25–2 × mean token norm.
