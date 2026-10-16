@@ -181,9 +181,15 @@ class LM:
             res[w] = float(torch.logsumexp(lp[list(cands)], 0))
         return res
 
-    def expected_digit(self, messages, lo=0, hi=9):
-        """Expected value of a single-digit answer (lo..hi), from next-token probabilities."""
+    def digit_dist(self, messages, lo=0, hi=9):
+        """(expected value, renormalised probabilities lo..hi, total probability mass on the digit tokens)."""
         lps = self.next_token_logprobs(messages, [str(i) for i in range(lo, hi + 1)])
         ps = {int(k): math.exp(v) for k, v in lps.items()}
         z = sum(ps.values())
-        return sum(k * p for k, p in ps.items()) / z if z > 0 else float("nan")
+        probs = [ps[k] / z if z > 0 else float("nan") for k in range(lo, hi + 1)]
+        mean = sum(k * p for k, p in zip(range(lo, hi + 1), probs)) if z > 0 else float("nan")
+        return mean, probs, z
+
+    def expected_digit(self, messages, lo=0, hi=9):
+        """Expected value of a single-digit answer (lo..hi), from next-token probabilities."""
+        return self.digit_dist(messages, lo, hi)[0]

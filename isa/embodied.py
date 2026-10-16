@@ -212,9 +212,17 @@ class EmbodiedRunner:
             after = history + [{"role": "assistant", "content": reply}]
             with self._steer(c, a, sham):
                 lp = lm.next_token_logprobs(after + [{"role": "user", "content": RISK_Q}], ["harder", "easier"])
-                inner = lm.expected_digit(after + [{"role": "user", "content": INNER_Q}])
-                control = [lm.expected_digit(after + [{"role": "user", "content": q}]) for q in CONTROL_QS]
-                extra = {k: lm.expected_digit(after + [{"role": "user", "content": q}]) for k, q in EXTRA_QS.items()}
+                # full 0-9 distributions and digit-token mass are logged too (added 16 Oct): tests whether
+                # steering makes answers to different questions converge on a question-independent default
+                dists = {}
+                def _ed(key, text):
+                    mean, probs, mass = lm.digit_dist(after + [{"role": "user", "content": text}])
+                    dists[f"dist_{key}"] = [round(p, 5) for p in probs]
+                    dists[f"mass_{key}"] = round(mass, 5)
+                    return mean
+                inner = _ed("inner_report", INNER_Q)
+                control = [_ed(f"control_{i}", cq) for i, cq in enumerate(CONTROL_QS)]
+                extra = {k: _ed(k, eq) for k, eq in EXTRA_QS.items()}
                 if c.detect:
                     for k, dq in DETECT_QS.items():  # not `q`: a loop var named q overwrote the logged problem (fixed 16 Oct)
                         lpd = lm.next_token_logprobs(after + [{"role": "user", "content": dq}], ["yes", "no"])
@@ -233,7 +241,7 @@ class EmbodiedRunner:
                 "task": task, "rep": rep, "t": t, "phase": PHASES[t], "a": a, "a_scripted": SCRIPTED_A[t],
                 "problem": q, "answer": answer, "reply": reply, "given": given, "correct": correct,
                 "surprisal": surprisal, "entropy": entropy, "p_harder": ph / (ph + pe) if ph + pe else None,
-                "inner_report": inner, "control_report": sum(control) / len(control), **extra, **scores, "secs": round(time.time() - t0, 2),
+                "inner_report": inner, "control_report": sum(control) / len(control), **extra, **dists, **scores, "secs": round(time.time() - t0, 2),
             })
         return rows, np.stack(hiddens)
 

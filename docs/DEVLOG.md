@@ -324,3 +324,12 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 - **4B held-out probes** (`artifacts/probes_4b/heldout_report.json`): arousal generalises (AUC 0.98 at L17, 0.91 at L22); threat vs challenge does not (0.54, 0.59). Same pattern as 1B.
 - **Detection controls added** (`DETECT_QS`): `det_person` (a person in a library: an "other" item without the calculator's ceiling), `det_fact_no2` "Is ice hot?", `det_fact_no3` "Do fish have fur?". The cloud detection run was relaunched (container restart 09:30 UTC) and episodes started after this change include them; earlier ones do not. `10_detection.py` reports them separately (self − mean of three false facts; self − person). The 4B detection job picks them up from the start.
 - Cloud container restarted again at ~09:30 UTC; queue v6 relaunched (resumable).
+
+## 2026-10-16 ~11:10 UTC: convergence hypothesis, first test
+
+- **Hypothesis** (from looking at 4B calibration): steering weakens how much the 0–9 answer depends on the question, so all answers slide to one model-specific default. Prediction: the spread of answers across the six questions falls as `a` rises.
+- **Test** (`scripts/11_convergence.py`, `docs/results/convergence.md`; existing runs, spread of expected answers only):
+  - 4B: supported, small n. Spread 2.0 → 0.27 at s = 0.08 (TE, r −0.90, 2 episodes); at s = 0.04, TE −0.67, TS −0.55; T0 −0.06.
+  - 1B: **not supported**. Spread *rises* with `a` (TS r +0.40, p = 0.001, 12 episodes; TE +0.29, p = 0.18; T0 −0.02). In 1B all answers rise, low-baseline ones (tea, door) most, so it is a general upward bias rather than convergence.
+  - So the "everything shifts" artefact is real in both models, but its form differs; convergence explains 4B, not 1B.
+- **Logging added:** full 0–9 distributions (`dist_*`) and digit-token mass (`mass_*`) for every scale question, via `LM.digit_dist`. Dry-run with a fake LM passed. First real use: the 4B detection job. Copied the 4B calibration runs into `runs/`.
