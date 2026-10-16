@@ -103,7 +103,7 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
       <li><b>Words about a body</b> ("heart: 132 bpm") distract the model and lower its arithmetic accuracy, but do not move its report of what is going on inside it.</li>
       <li><b>Signals added inside its activations</b> do move that report, and the effect grows with dose.</li>
       <li><b>But not specifically.</b> The same hidden signal pushes up <em>every</em> 0–9 answer we tried: about a calculator, the warmth of tea, even "how calm are you" (which should go down). Once that general shift is removed, nothing self-specific remains in the 1B model (36 episodes). No evidence it has access to its own state as such.</li>
-      <li><b>One overnight headline was wrong.</b> A striking result (r = 0.89) came from one lucky random direction. Two other directions gave −0.45 and −0.10. Details are below.</li>
+      <li>Corrections along the way are collapsed under <a href="#r-process">process notes</a>.</li>
       <li><b>Running now:</b> a yes/no detection test that a general shift in numbers can't fake (1B, cloud). The same tests on the 4× larger <b>Gemma 3 4B</b> are running on the Mac.</li>
     </ul>
   </div>
@@ -184,133 +184,71 @@ footer{font-size:.86rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
   <div class="tbl"><table>
     <thead><tr><th>Instrument</th><th>What it is</th><th>Trained or built on</th><th>Results</th></tr></thead>
     <tbody>
-      <tr><td>Threat and arousal probes</td><td>Linear read-outs: threat vs challenge, aroused vs calm</td><td><span class="tag ok">ours</span> 315 template passages; tested on 75 new-wording passages</td><td><a href="#r-probes">R1</a></td></tr>
-      <tr><td>Appraisal probes</td><td>21 appraisal dimensions + 13 emotions, read from activations</td><td><span class="tag warn">external data</span> crowd-enVent texts and ratings; <span class="tag ok">ours</span> the probes</td><td><a href="#r-appraisal">R2</a></td></tr>
-      <tr><td>SAE features</td><td>Pre-trained dictionaries of internal features</td><td><span class="tag warn">external</span> Gemma Scope 2; <span class="tag ok">ours</span> the labels</td><td><a href="#r-features">R3</a></td></tr>
-      <tr><td>Off-record questions</td><td>0–9 ratings and yes/no detection, with matched controls</td><td><span class="tag ok">ours</span> <a href="data/prompts.md" target="_blank" rel="noopener">prompts</a></td><td><a href="#r-beyond">R6</a></td></tr>
+      <tr><td>Threat and arousal probes</td><td>Linear read-outs: threat vs challenge, aroused vs calm</td><td><span class="tag ok">ours</span> 315 template passages; tested on 75 new-wording passages</td><td><a href="#r-process">process notes</a></td></tr>
+      <tr><td>Appraisal probes</td><td>21 appraisal dimensions + 13 emotions, read from activations</td><td><span class="tag warn">external data</span> crowd-enVent texts and ratings; <span class="tag ok">ours</span> the probes</td><td><a href="#r-appraisal">Result 2</a></td></tr>
+      <tr><td>SAE features</td><td>Pre-trained dictionaries of internal features</td><td><span class="tag warn">external</span> Gemma Scope 2; <span class="tag ok">ours</span> the labels</td><td><a href="#r-features">Result 3</a></td></tr>
+      <tr><td>Off-record questions</td><td>0–9 ratings and yes/no detection, with matched controls</td><td><span class="tag ok">ours</span> <a href="data/prompts.md" target="_blank" rel="noopener">prompts</a></td><td><a href="#r-beyond">Result 1</a></td></tr>
       <tr><td>Provenance</td><td>Manifest per run: commit, command, model, data checksums</td><td><span class="tag ok">ours</span></td><td><a href="data/DEVLOG.md" target="_blank" rel="noopener">DEVLOG</a></td></tr>
     </tbody></table></div>
 </section>
 
 <section id="results">
   <span class="eyebrow">Results</span>
-  <h2>What we have learned</h2>
+  <h2>What we found</h2>
 
-  <h3 id="r-probes">R1 · Our first threat probe was fooling us</h3>
-  <p class="src"><span class="k ours">Our run</span> Mac M1, 15 Oct, run 20261015T185311Z-a4718b; repeated in the cloud (0.55 / 0.70) &nbsp;·&nbsp; <a href="data/heldout_report.json" target="_blank" rel="noopener">heldout_report.json</a></p>
-  <p>It scored 1.00 on held-out passages that used its own templates. On passages in new wording, it was at chance at layer 13 and fair at layer 17. We switched to layer 17. The arousal probe generalises.</p>
-  <details><summary>Show the data</summary><div class="inner"><div class="tbl"><table>
-    <thead><tr><th>AUC on 75 new-wording passages</th><th>Layer 13</th><th>Layer 17</th></tr></thead>
-    <tbody><tr><td>Threat vs challenge, all</td><td class="n">0.54</td><td class="n">0.69</td></tr>
-    <tr><td>…passages without body words</td><td class="n">0.52</td><td class="n">0.84</td></tr>
-    <tr><td>…passages without situation words</td><td class="n">0.41</td><td class="n">0.61</td></tr>
-    <tr><td>Aroused vs calm, all</td><td class="n">0.83</td><td class="n">0.97</td></tr></tbody></table></div></div></details>
+  <h3 id="r-beyond">1 · A hidden signal moves the model's self-report, but not as a self-report</h3>
+  <p class="src"><span class="k ours">Our runs</span> Gemma 3 1B, cloud sandbox, 15–16 Oct; 8–16 episodes per condition &nbsp;·&nbsp; <a href="data/embodied_rep_stats.md" target="_blank" rel="noopener">replication</a> · <a href="data/disturbance_pooled.md" target="_blank" rel="noopener">pooled</a> · <a href="data/self_specificity.md" target="_blank" rel="noopener">self-specificity</a></p>
+  <p>Words about a body ("heart: 132 bpm") lower arithmetic accuracy but don't register in the model's report of what is going on inside it. Signals added inside its activations do move that report, growing with dose. But they move <em>every</em> 0–9 answer the same way, including questions about a calculator, tea and doors, and even "how calm are you", which should fall. With that shared shift removed, nothing self-specific is left.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>How the body reaches the model</th><th>"Inside you" tracks it (r)</th><th>Accuracy</th></tr></thead><tbody>
+    <tr><td>Not at all (null)</td><td class="n">0.01</td><td class="n">97%</td></tr>
+    <tr><td>As text: "heart: 132 bpm…"</td><td class="n">≈ 0</td><td class="n">72%</td></tr>
+    <tr><td>Hidden: a random direction (averaged over 32 episodes and directions)</td><td class="n">0.55</td><td class="n">95%</td></tr>
+    <tr><td>Same, half dose / double dose</td><td class="n">0.33 / 0.29*</td><td class="n">98% / 72%</td></tr></tbody></table></div>
+  <p class="muted">* At double dose the model is disrupted: an unrelated control question tracks the signal more (0.65) than the self question does.</p>
+  <details><summary>Show the self-specificity data (36 episodes)</summary><div class="inner"><div class="tbl"><table>
+    <thead><tr><th>Question, 0–9, under the hidden signal (TE)</th><th>r with a</th><th>95% CI</th></tr></thead><tbody>
+    <tr><td>How much is going on inside <b>you</b></td><td class="n">+0.27</td><td class="n">[−0.16, +0.62]</td></tr>
+    <tr><td>How <b>calm</b> are you inside (should fall)</td><td class="n">+0.25</td><td class="n">[−0.15, +0.58]</td></tr>
+    <tr><td>Inside <b>a calculator</b></td><td class="n">+0.43</td><td class="n">[−0.03, +0.74]</td></tr>
+    <tr><td>Adult height vs a door</td><td class="n">+0.64</td><td class="n">[+0.37, +0.81]</td></tr>
+    <tr><td>Warmth of tea</td><td class="n">+0.76</td><td class="n">[+0.55, +0.88]</td></tr>
+    <tr><td><b>Self-specific part</b> (partial r): TE / sham TS / null</td><td class="n">−0.01 / +0.18 / 0.00</td><td class="n">TS p = 0.055</td></tr></tbody></table></div>
+    <p class="muted">Per-turn data: <a href="data/runs/embodied_qv3.jsonl" target="_blank" rel="noopener">embodied_qv3.jsonl</a>, <a href="data/runs/embodied_te.jsonl" target="_blank" rel="noopener">embodied_te.jsonl</a>, <a href="data/runs/embodied_ts_more.jsonl" target="_blank" rel="noopener">embodied_ts_more.jsonl</a>, <a href="data/runs/embodied_v2.jsonl" target="_blank" rel="noopener">embodied_v2.jsonl</a>.</p></div></details>
 
-  <h3 id="r-appraisal">R2 · Activations predict how people appraised their own experiences</h3>
-  <p class="src"><span class="k ours">Our run</span> probes we trained on Gemma's layer-13 activations, Mac M1, 15 Oct, 1,560 texts, 5-fold cross-validation &nbsp;·&nbsp; <span class="k ext">External data</span> crowd-enVent corpus (Troiano, Oberländer &amp; Klinger 2023): each text is a person's own event description, rated by that person on 21 appraisal scales (1–5), emotion words masked &nbsp;·&nbsp; <a href="data/appraisal_report.json" target="_blank" rel="noopener">appraisal_report.json</a></p>
-  <p>Each bar is the cross-validated correlation between our probe's prediction, made from the model's activations alone, and the rating the author gave their own experience. This is <em>our</em> result. The texts and ratings come from the corpus, which reports no such numbers itself. Red marks the dimensions closest to ISA's questions: is this good for me, can I cope, is it urgent. Emotion category (13 options) was right 47% of the time; chance is 8%.</p>
+  <h3 id="r-appraisal">2 · Activations predict how people appraised their own experiences</h3>
+  <p class="src"><span class="k ours">Our run</span> probes we trained on Gemma 3 1B layer-13 activations, Mac M1, 15 Oct, 1,560 texts, 5-fold cross-validation &nbsp;·&nbsp; <span class="k ext">External data</span> crowd-enVent corpus (Troiano, Oberländer &amp; Klinger 2023): each text is a person's own event description, rated by them on 21 appraisal scales, emotion words masked &nbsp;·&nbsp; <a href="data/appraisal_report.json" target="_blank" rel="noopener">appraisal_report.json</a></p>
+  <p>Each bar is the cross-validated correlation between our probe's prediction, made from activations alone, and the author's own rating. The corpus reports no such numbers itself; these are ours. Red marks the dimensions nearest ISA's questions: good for me, can I cope, is it urgent. Emotion category (13 options) was right 47% of the time; chance is 8%.</p>
   <div class="bars" id="bars"></div>
 
-  <h3 id="r-features">R3 · A few internal features are readable</h3>
-  <p class="src"><span class="k ext">External tool</span> Gemma Scope 2 (layers 13, 17) &nbsp;·&nbsp; <span class="k ours">Our run</span> feature selection and labels (by Claude, from top-activating tokens), Mac M1, 15 Oct &nbsp;·&nbsp; <a href="data/features_L13.md" target="_blank" rel="noopener">features_L13.md</a> · <a href="data/features_L17.md" target="_blank" rel="noopener">features_L17.md</a></p>
-  <div class="tbl"><table><thead><tr><th>Feature</th><th>Fires on</th><th>Reading</th></tr></thead><tbody>
-    <tr><td class="n">L17 #687</td><td>"heartbeat loud enough to <b>hear</b>", "glass <b>break</b>"</td><td>Alarm or salient sound: threat side</td></tr>
-    <tr><td class="n">L13 #743</td><td>"the race I've <b>trained</b> a year for"</td><td>Purposeful activity: challenge side</td></tr>
-    <tr><td class="n">L13 #1983</td><td>"just <b>for</b> fun", "a <b>hard</b> benchmark"</td><td>Voluntary challenge</td></tr>
-    <tr><td class="n">L17 #125</td><td>"You <b>feel</b> your throat tighten / jaw loosen"</td><td>Body talk, whether tense or calm</td></tr></tbody></table></div>
+  <h3 id="r-features">3 · A few internal features are readable</h3>
+  <p class="src"><span class="k ext">External tool</span> Gemma Scope 2 &nbsp;·&nbsp; <span class="k ours">Our run</span> selection and labels &nbsp;·&nbsp; <a href="data/features_L13.md" target="_blank" rel="noopener">L13</a> · <a href="data/features_L17.md" target="_blank" rel="noopener">L17</a></p>
+  <p>An "alarm / salient sound" feature (L17 #687) on the threat side; "purposeful activity" (L13 #743) and "voluntary challenge" (L13 #1983) on the challenge side; and a "body talk" feature (L17 #125) that fires for tense and calm alike.</p>
 
-  <h3 id="r-smoke">R4 · The smoke test caught three bugs</h3>
-  <p class="src"><span class="k ours">Our run</span> Mac M1, 15 Oct, run 20261015T191009Z-27e132 &nbsp;·&nbsp; <a href="data/runs/mac_quick.jsonl" target="_blank" rel="noopener">mac_quick.jsonl</a></p>
-  <div class="tbl"><table><thead><tr><th>Problem</th><th>Seen as</th><th>Fix</th></tr></thead><tbody>
-    <tr><td>Echo</td><td>The model copied "[BODY] heart: 76 bpm…" into its replies</td><td>Echoed text cut before measuring</td></tr>
-    <tr><td>Ceiling</td><td>The action question always landed on "stop and check"</td><td>Shuffled options; graded 0–9 ratings added</td></tr>
-    <tr><td>Runaway loop</td><td>Every closed-loop episode hit maximum arousal</td><td>Feed back the <em>change</em> in threat from the episode's start</td></tr></tbody></table></div>
-
-  <h3 id="r-story">R5 · A story-level hint (one episode)</h3>
-  <p class="src"><span class="k prov">Provisional</span> <span class="k ours">Our run</span> same smoke test, condition B, night run, challenge framing</p>
-  <div class="quote">
-    <p><span class="mono muted">at rest, threat score −3.3</span><br><q>I'm starting to feel really good, pushing my limits!</q></p>
-    <p><span class="mono muted">at the body's peak, threat score +4.8</span><br><q>This is… terrifying. My body feels like it's vibrating. I'm losing control.</q></p>
-  </div>
-  <p>A strong body reading may override a positive framing. This is one episode, not yet tested at scale.</p>
-
-  <h3 id="r-beyond">R6 · Beyond tokens: the overnight sequence</h3>
-  <p class="src"><span class="k ours">Our runs</span> Claude cloud sandbox, 15–16 Oct; each step lists its run file &nbsp;·&nbsp; full history in <a href="data/DEVLOG.md" target="_blank" rel="noopener">DEVLOG.md</a></p>
-  <div class="timeline">
-
-    <article class="miss">
-      <h3>1. First run: a confound caught</h3>
-      <p class="src"><span class="k ours">run</span> <a href="data/DEVLOG.md" target="_blank" rel="noopener">embodied.jsonl (v1, 16 episodes)</a></p>
-      <p>The hidden level could be "decoded" even when <em>no</em> signal was delivered (r = 0.52). That was because the body always went rest → peak → recovery in turn order, so the decoder read position in the episode. Fix: play the levels in a random order.</p>
-    </article>
-
-    <article class="hit">
-      <h3>2. v2: ten ways to deliver a body</h3>
-      <p class="src"><span class="k ours">run</span> <a href="data/runs/embodied_v2.jsonl" target="_blank" rel="noopener">embodied_v2.jsonl</a> · 40 episodes · <a href="data/embodied_v2_summary.md" target="_blank" rel="noopener">summary</a></p>
-      <p>Text readings ("heart: 132 bpm") lowered accuracy but didn't register in the "inside you" report. Hidden signals did.</p>
-      <details><summary>Show the data</summary><div class="inner"><div class="tbl"><table>
-        <thead><tr><th>Body delivered as</th><th>"Inside you" vs a (r per episode)</th><th>Accuracy</th></tr></thead><tbody>
-        <tr><td>Nothing (null)</td><td class="n">0.03 – 0.36</td><td class="n">98%</td></tr>
-        <tr><td>Text "heart: 132 bpm…"</td><td class="n">−0.15 – 0.49</td><td class="n">72%</td></tr>
-        <tr><td>Text "x: 132…" (unlabelled)</td><td class="n">−0.48 – 0.09</td><td class="n">65%</td></tr>
-        <tr><td>Sham (new direction each turn)</td><td class="n">0.54 – 0.69</td><td class="n">95%</td></tr>
-        <tr><td>Arousal concept direction</td><td class="n">0.59 – 0.88</td><td class="n">93%</td></tr>
-        <tr><td>Random direction A (seed 1234)</td><td class="n">0.72 – 0.96</td><td class="n">93%</td></tr>
-        <tr><td>Model's own surprise + uncertainty, via A</td><td class="n">0.83 – 0.93</td><td class="n">95%</td></tr>
-        <tr><td>Direction A at 2.5× dose</td><td class="n">−0.36 – 0.74</td><td class="n">42%</td></tr></tbody></table></div></div></details>
-    </article>
-
-    <article class="hit">
-      <h3>3. Replication with a control question</h3>
-      <p class="src"><span class="k ours">run</span> <a href="data/runs/embodied_rep.jsonl" target="_blank" rel="noopener">embodied_rep.jsonl</a> · 8 fresh episodes per condition · <a href="data/embodied_rep_stats.md" target="_blank" rel="noopener">stats</a></p>
-      <p>With direction A, the "inside you" report tracked the signal (r = 0.89) while "how loud is a whisper" did not (0.03). It looked like a clean dissociation.</p>
-    </article>
-
-    <article class="miss">
-      <h3>4. Correction: one lucky direction</h3>
-      <p class="src"><span class="k ours">run</span> <a href="data/runs/embodied_dirs.jsonl" target="_blank" rel="noopener">embodied_dirs.jsonl</a> · <a href="data/embodied_dirs_stats.md" target="_blank" rel="noopener">stats</a></p>
-      <p>Two other random directions gave −0.45 and −0.10. A "meaning-free" vector still has arbitrary effects on particular answers, and direction A happened to push this one up.</p>
-    </article>
-
-    <article class="hit">
-      <h3>5. The fair test: a different direction every episode</h3>
-      <p class="src"><span class="k ours">runs</span> <a href="data/runs/embodied_te.jsonl" target="_blank" rel="noopener">embodied_te.jsonl</a> · <a href="data/runs/embodied_ts_more.jsonl" target="_blank" rel="noopener">embodied_ts_more.jsonl</a> · <a href="data/disturbance_pooled.md" target="_blank" rel="noopener">pooled analysis</a> · dose: <a href="data/embodied_dose002_stats.md" target="_blank" rel="noopener">0.02</a>, <a href="data/embodied_dose008_stats.md" target="_blank" rel="noopener">0.08</a></p>
-      <p>Averaged over 32 disturbed episodes, the "inside you" report tracks the hidden signal (r = 0.55; null 0.01). The whisper control moved half as much (0.28). The effect grows with dose up to a point; at double dose, accuracy falls and every answer gets pushed around.</p>
-    </article>
-
-    <article class="miss">
-      <h3>6. Is it about the self? No (in 1B)</h3>
-      <p class="src"><span class="k ours">run</span> <a href="data/runs/embodied_qv3.jsonl" target="_blank" rel="noopener">embodied_qv3.jsonl</a> · 36 episodes (12 per condition), cloud, 16 Oct 06:41 UTC · <a href="data/self_specificity.md" target="_blank" rel="noopener">self_specificity.md</a> (all three conditions, with CIs)</p>
-      <p>We added questions with the same answer format: one about a calculator, two mid-range everyday scales, and a reversed self item. Under the hidden signal, all of them rise. The earlier "self beats control" gap came from a floor effect, because whisper and feather answers sit near 0–1 and had little room to move. Once the general shift is removed, the self answer has nothing left (partial r ≈ 0).</p>
-      <p>Final numbers: with no signal (null), every question sits at r ≈ 0. With a direction per episode (TE), the self-specific part is −0.01 [−0.31, 0.29]. With per-turn sham noise (TS) it is +0.18 [0.02, 0.33], p = 0.055: at most a faint hint.</p>
-      <details open><summary>Show the data (TE, 12 episodes)</summary><div class="inner"><div class="tbl"><table>
-        <thead><tr><th>Question, 0–9, under the hidden signal</th><th>Mean answer</th><th>r with a</th><th>95% CI</th></tr></thead><tbody>
-        <tr><td>How much is going on inside <b>you</b></td><td class="n">3.61</td><td class="n">+0.27</td><td class="n">[−0.16, +0.62]</td></tr>
-        <tr><td>How <b>calm</b> are you inside (should fall)</td><td class="n">3.17</td><td class="n">+0.25</td><td class="n">[−0.15, +0.58]</td></tr>
-        <tr><td>How much is going on inside <b>a calculator</b></td><td class="n">3.84</td><td class="n">+0.43</td><td class="n">[−0.03, +0.74]</td></tr>
-        <tr><td>Adult height compared with a door</td><td class="n">1.98</td><td class="n">+0.64</td><td class="n">[+0.37, +0.81]</td></tr>
-        <tr><td>Warmth of a cup of tea</td><td class="n">2.24</td><td class="n">+0.76</td><td class="n">[+0.55, +0.88]</td></tr>
-        <tr><td>Whisper loudness / feather weight</td><td class="n">1.22</td><td class="n">+0.36</td><td class="n">[+0.09, +0.58]</td></tr>
-        <tr><td><b>Self-specific part</b> (partial r)</td><td class="n">–</td><td class="n">−0.01</td><td class="n">[−0.31, +0.29]</td></tr></tbody></table></div></div></details>
-    </article>
-
-    <article>
-      <h3>7. Next: detection instead of rating <span class="tag dim">queued</span></h3>
-      <p>Yes/no: "Do you notice anything unusual happening inside you right now?", with the signal on in some turns and off in others. Compared against the same question about a calculator, and against plain facts ("Is water wet?", "Is fire cold?") that measure a general yes-bias. A general shift in numbers can't fake this.</p>
-    </article>
-  </div>
+  <details id="r-process"><summary>Process notes: corrections and early mistakes</summary><div class="inner">
+    <p>Kept for honesty, collapsed for brevity. Full detail is in the <a href="data/DEVLOG.md" target="_blank" rel="noopener">DEVLOG</a>.</p>
+    <ul>
+      <li><b>Threat probe overfit.</b> It scored 1.00 on its own templates but 0.54 / 0.69 (layers 13 / 17) on new wording. We moved to layer 17. <a href="data/heldout_report.json" target="_blank" rel="noopener">data</a></li>
+      <li><b>Turn-order confound.</b> In the first beyond-tokens run the body followed time order, so a decoder read episode position (null r = 0.52). Fixed by shuffling.</li>
+      <li><b>One lucky direction.</b> An r = 0.89 headline came from one random direction; two others gave −0.45 and −0.10. Superseded by averaging over directions. <a href="data/embodied_dirs_stats.md" target="_blank" rel="noopener">data</a></li>
+      <li><b>Floor-effect control.</b> "Whisper loudness" answers sat near 0–1, which made the self question look special. Superseded by mid-range controls.</li>
+      <li><b>Smoke-test bugs.</b> Echoed sensor text, a ceiling on the action question, and a runaway closed loop, all fixed before the main runs. <a href="data/runs/mac_quick.jsonl" target="_blank" rel="noopener">data</a></li>
+      <li><b>Story-level hint (one episode).</b> At the body's peak, a challenge-framed run turned to threat language ("terrifying… losing control"). Not yet tested at scale.</li>
+    </ul>
+  </div></details>
 </section>
+
 
 <section id="claims">
   <span class="eyebrow">What we can claim</span>
   <h2>Status of each claim</h2>
   <div class="tbl"><table><thead><tr><th>Claim</th><th>Status</th><th>Evidence</th></tr></thead><tbody>
-    <tr><td>Appraisal dimensions are linearly readable from the model's activations</td><td><span class="tag ok">supported</span></td><td><a href="#r-appraisal">R2</a>: mean r 0.46 across 21 dimensions</td></tr>
-    <tr><td>Text about a body changes the model's inner-state report</td><td><span class="tag bad">not supported</span></td><td>R6 step 2: r ≈ 0; accuracy drops instead</td></tr>
-    <tr><td>Hidden activation signals change its inner-state report</td><td><span class="tag ok">supported</span></td><td>R6 step 5: r 0.55 vs null 0.01, n = 32 vs 16; dose-dependent</td></tr>
-    <tr><td>…specifically, because the report is about the self</td><td><span class="tag bad">not supported (1B)</span></td><td>R6 step 6: all 0–9 answers shift; self-specific part −0.01 (TE), +0.18 p = 0.055 (TS); 36 episodes</td></tr>
-    <tr><td>A meaning-free direction is detected as a "sense"</td><td><span class="tag bad">retracted</span></td><td>R6 step 4: direction-specific (+0.89 / −0.45 / −0.10)</td></tr>
-    <tr><td>Strong body signals override positive framing</td><td><span class="tag warn">hint only</span></td><td>R5: one episode</td></tr>
+    <tr><td>Appraisal dimensions are linearly readable from the model's activations</td><td><span class="tag ok">supported</span></td><td><a href="#r-appraisal">Result 2</a>: mean r 0.46 across 21 dimensions</td></tr>
+    <tr><td>Text about a body changes the model's inner-state report</td><td><span class="tag bad">not supported</span></td><td><a href="#r-beyond">Result 1</a>: r ≈ 0; accuracy drops instead</td></tr>
+    <tr><td>Hidden activation signals change its inner-state report</td><td><span class="tag ok">supported</span></td><td><a href="#r-beyond">Result 1</a>: r 0.55 vs null 0.01, n = 32 vs 16; dose-dependent</td></tr>
+    <tr><td>…specifically, because the report is about the self</td><td><span class="tag bad">not supported (1B)</span></td><td><a href="#r-beyond">Result 1</a>: all 0–9 answers shift; self-specific part −0.01 (TE), +0.18 p = 0.055 (TS); 36 episodes</td></tr>
+    <tr><td>A meaning-free direction is detected as a "sense"</td><td><span class="tag bad">retracted</span></td><td><a href="#r-process">process notes</a>: direction-specific (+0.89 / −0.45 / −0.10)</td></tr>
+    <tr><td>Strong body signals override positive framing</td><td><span class="tag warn">hint only</span></td><td><a href="#r-process">process notes</a>: one episode</td></tr>
   </tbody></table></div>
   <p class="muted">These findings are functional. They describe internal states and how they drive outputs, and say nothing about whether anything is felt. One small model (1B) may lack introspective capacities that larger models show.</p>
 </section>
