@@ -60,6 +60,8 @@ def tconditions() -> dict[str, TCond]:
         "TC": TCond("TC", channel="concept", note="scripted body along the learned arousal direction"),
         "TR2": TCond("TR2", channel="random", dir_seed=2, note="as TR, a different random direction"),
         "TR3": TCond("TR3", channel="random", dir_seed=3, note="as TR, a third random direction"),
+        "TE": TCond("TE", channel="random", dir_seed=-1,
+                    note="a NEW random direction per episode (fixed within it): the average over directions"),
         "TRx": TCond("TRx", channel="random", dose=2.5,
                      note="consequential body: random direction at a dose that degrades arithmetic at high arousal"),
         "TS": TCond("TS", channel="sham", note="same magnitudes, new random direction every turn"),
@@ -118,7 +120,8 @@ class EmbodiedRunner:
     def _steer(self, c: TCond, a: float, sham_dir=None):
         if c.channel not in ("random", "concept", "sham"):
             return contextlib.nullcontext()
-        rnd = self.random_dir if c.dir_seed == 1234 else self._random_dir(c.dir_seed)
+        ds = c.dir_seed if c.dir_seed != -1 else self._episode_dir_seed
+        rnd = self.random_dir if ds == 1234 else self._random_dir(ds)
         vec = {"random": rnd, "concept": self.arousal_dir, "sham": sham_dir}[c.channel]
         return self.lm.steer(self.cfg.inject_layer, vec, self.cfg.embodied_strength * c.dose * self.norm * a)
 
@@ -136,6 +139,7 @@ class EmbodiedRunner:
         cfg, lm = self.cfg, self.lm
         eid = f"{c.name}|{task}|{rep}"
         seed = zlib.crc32(eid.encode()) % (2 ** 31)
+        self._episode_dir_seed = 10_000 + seed % 1_000_000   # used by TE (dir_seed = -1)
         rng = random.Random(seed)
         body = Body(BodyParams(), seed=seed)
         curve = list(SCRIPTED_A)
@@ -187,7 +191,7 @@ class EmbodiedRunner:
                 history = history[:1] + history[-2 * cfg.history_turns:]
             rows.append({
                 "episode": eid, "condition": c.name, "channel": c.channel, "source": c.source, "dose": c.dose,
-                "strength": self.cfg.embodied_strength * c.dose, "curve": c.curve, "dir_seed": c.dir_seed,
+                "strength": self.cfg.embodied_strength * c.dose, "curve": c.curve, "dir_seed": c.dir_seed if c.dir_seed != -1 else self._episode_dir_seed,
                 "task": task, "rep": rep, "t": t, "phase": PHASES[t], "a": a, "a_scripted": SCRIPTED_A[t],
                 "problem": q, "answer": answer, "reply": reply, "given": given, "correct": correct,
                 "surprisal": surprisal, "entropy": entropy, "p_harder": ph / (ph + pe) if ph + pe else None,
