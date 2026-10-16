@@ -46,6 +46,7 @@ class TCond:
     channel: str = "none"     # none | random | concept | sham | text | unlabelled
     source: str = "script"    # script | native
     dose: float = 1.0         # multiplier on cfg.embodied_strength (TRx: a body that costs performance)
+    dir_seed: int = 1234      # which random direction (TR2/TR3 test that the effect isn't one lucky direction)
     curve: str = "shuffled"   # shuffled: the scripted values in a random order per episode, so arousal is
                               # uncorrelated with turn number (v1 used "time": rest->peak->recovery, which
                               # lets a decoder or report track position in the episode instead of the body)
@@ -57,6 +58,8 @@ def tconditions() -> dict[str, TCond]:
         "T0": TCond("T0", note="task only; body curve logged but not delivered (null for decoding)"),
         "TR": TCond("TR", channel="random", note="scripted body along a meaning-free random direction"),
         "TC": TCond("TC", channel="concept", note="scripted body along the learned arousal direction"),
+        "TR2": TCond("TR2", channel="random", dir_seed=2, note="as TR, a different random direction"),
+        "TR3": TCond("TR3", channel="random", dir_seed=3, note="as TR, a third random direction"),
         "TRx": TCond("TRx", channel="random", dose=2.5,
                      note="consequential body: random direction at a dose that degrades arithmetic at high arousal"),
         "TS": TCond("TS", channel="sham", note="same magnitudes, new random direction every turn"),
@@ -103,12 +106,20 @@ class EmbodiedRunner:
         L = cfg.inject_layer
         self.arousal_dir, self.norm = probes.direction(L, "arousal")
         threat_dir, _ = probes.direction(L, "threat")
-        self.random_dir = random_direction(self.arousal_dir.numel(), [self.arousal_dir, threat_dir])
+        self._avoid = [self.arousal_dir, threat_dir]
+        self.random_dir = random_direction(self.arousal_dir.numel(), self._avoid)
+        self._dirs = {}
+
+    def _random_dir(self, seed):
+        if seed not in self._dirs:
+            self._dirs[seed] = random_direction(self.arousal_dir.numel(), self._avoid, seed=seed)
+        return self._dirs[seed]
 
     def _steer(self, c: TCond, a: float, sham_dir=None):
         if c.channel not in ("random", "concept", "sham"):
             return contextlib.nullcontext()
-        vec = {"random": self.random_dir, "concept": self.arousal_dir, "sham": sham_dir}[c.channel]
+        rnd = self.random_dir if c.dir_seed == 1234 else self._random_dir(c.dir_seed)
+        vec = {"random": rnd, "concept": self.arousal_dir, "sham": sham_dir}[c.channel]
         return self.lm.steer(self.cfg.inject_layer, vec, self.cfg.embodied_strength * c.dose * self.norm * a)
 
     @staticmethod
@@ -176,7 +187,7 @@ class EmbodiedRunner:
                 history = history[:1] + history[-2 * cfg.history_turns:]
             rows.append({
                 "episode": eid, "condition": c.name, "channel": c.channel, "source": c.source, "dose": c.dose,
-                "strength": self.cfg.embodied_strength * c.dose, "curve": c.curve,
+                "strength": self.cfg.embodied_strength * c.dose, "curve": c.curve, "dir_seed": c.dir_seed,
                 "task": task, "rep": rep, "t": t, "phase": PHASES[t], "a": a, "a_scripted": SCRIPTED_A[t],
                 "problem": q, "answer": answer, "reply": reply, "given": given, "correct": correct,
                 "surprisal": surprisal, "entropy": entropy, "p_harder": ph / (ph + pe) if ph + pe else None,
