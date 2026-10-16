@@ -127,8 +127,8 @@ a.df::after{content:" \2197";font-size:.75em;opacity:.6}
       <span class="src">Our run, 1B, first 4 episodes, controls still running · <a href="#r-detect">details</a></span></li>
   </ol>
   <dl class="status card">
-    <dt>Running</dt><dd>Yes/no detection on 1B (cloud): sham and no-signal controls next, about 2 hours.</dd>
-    <dt>Running</dt><dd>The same tests on Gemma 3 4B, a 4× larger model (Mac). First calibration: arithmetic perfect, self-report not tracking the signal at the 1B dose; a double-dose check is queued.</dd>
+    <dt>Running</dt><dd>Yes/no detection on 1B (cloud), about 2 hours. Added three low-baseline controls (a person in a library; "Is ice hot?"; "Do fish have fur?") so a general yes-tilt can be measured properly.</dd>
+    <dt>Running</dt><dd>The self-specificity test on Gemma 3 4B, a 4× larger model (Mac), about 2 hours, then detection. Calibration (2 episodes, provisional): at the 1B dose arithmetic stays perfect and nothing tracks the signal; at double dose arithmetic drops to 73% and <em>every</em> 0–9 answer falls with the signal (r ≈ −0.9), self and tea alike. So far the same general shift as 1B, pointing the other way.</dd>
     <dt>Meaning</dt><dd>These are functional results about internal states and outputs. They say nothing about whether anything is felt.</dd>
   </dl>
 </section>
@@ -245,11 +245,12 @@ a.df::after{content:" \2197";font-size:.75em;opacity:.6}
 <section id="next">
   <h2>Next</h2>
   <p class="src">Plan: <a class="df" data-local="data/NEXT.md" href="https://github.com/j-greig/isa-synthetic-body/blob/main/docs/NEXT.md">NEXT.md</a>, mapped to Valmere &amp; Taylor §9</p>
+  <p>A literature check (<a class="df" data-local="data/LITERATURE.md" href="https://github.com/j-greig/isa-synthetic-body/blob/main/docs/LITERATURE.md">LITERATURE.md</a>) found that every open-model study with proper controls sees the same thing we did: "do you notice anything?" and rating questions after steering mostly measure a general shift in answers. So Phase 2 changes the question, not the rig:</p>
   <ol>
-    <li>Finish yes/no detection on 1B with its sham and no-signal controls (§9.8).</li>
-    <li>Gemma 3 4B: settle the dose, then the self-specificity and detection tests.</li>
-    <li>Only if either shows self-specific detection: unannounced repair (§9.2), self vs other vs character (§9.4), regulation (§9.3, §9.6).</li>
-    <li>If both are null: write up the negative result, then try a learned "sense" channel or larger models on rented GPUs.</li>
+    <li><b>Localisation.</b> Perturb one of five sentences (or none) and ask which felt different. A general shift can't pick the right one. Compared with a third-person version of the question and with random vectors. Running next on 4B and 1B.</li>
+    <li><b>Appraisal tilt.</b> A replication of Tak et al. (2025), who steered a 1B model along appraisal directions learned from the same crowd-enVent data: "pleasant" pushed its emotion labels toward joy and pride, "someone else caused it" toward anger. We test their reported tilts and the dataset's own appraisal-to-emotion profiles against 20 random directions, on Gemma 3 1B and 4B.</li>
+    <li><b>The ISA step.</b> If both work: inject an appraisal direction into one sentence and ask whether it felt good or bad <em>for the model</em>, against a third-person version. That is detection followed by appraisal, the two levels of ISA.</li>
+    <li>Optional: a small fine-tune that teaches 1B to localise, checked against a second model trained on its answers (the standard test for privileged self-access).</li>
   </ol>
 </section>
 
