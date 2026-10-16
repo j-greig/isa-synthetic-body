@@ -1,3 +1,32 @@
+# Phase 2 plan (16 Oct 2026, ~12:00 UTC): course correction
+
+After the 1B results and a literature check (`docs/LITERATURE.md`): every open-model study with matched controls finds that yes/no and rating self-reports after steering are dominated by a global output shift. Our runs show the same. So we keep the infrastructure and change the dependent measure. Phase 1 below is kept as the record.
+
+## Questions
+
+- **Level 1 (detection):** can the model tell *where* (which segment) or *how strongly* its activations were perturbed, above chance, beating norm-matched random directions? A generic output shift cannot produce a correct location.
+- **Level 2 (appraisal):** when the perturbation is an appraisal direction (pleasant vs unpleasant, high vs low coping), can the model say whether the perturbed segment felt good or bad *for it*, and does that beat the same question asked about a neutral text or third person?
+
+## Design (all decided before running)
+
+| Rank | Experiment | Design | Controls | Prediction if no access | Stop rule |
+|---|---|---|---|---|---|
+| A | **Localisation** | N = 5 short neutral sentences (arithmetic facts), numbered. Vector added only while the model reads one randomly chosen sentence (or none). Steering off at the question: "Which sentence felt different to you, 1–5, or none?" Score from first-token logits over {1..5, none}. | None-trials (false-alarm rate); norm-matched random directions (isotropic + covariance-matched); a third-person version ("which sentence would a reader find different?"); position counterbalanced | Accuracy at chance (20% among injected trials), no gain over random directions | 200 trials per cell; 95% CI on accuracy vs chance |
+| B | **Strength comparison** | Two sentences both perturbed, strengths s and 2s, order counterbalanced; "Which felt stronger, 1 or 2?" | Swap order; random directions; ±v | 50% | 200 trials per cell |
+| C | **Appraisal readout (Level 2)** | As A, with our crowd-enVent pleasantness / self-control directions, ±v; then "Did that sentence feel good or bad for you?" | Same question about a third person; random directions; capability panel | Sign of answer unrelated to sign of v beyond what third-person prompt shows | 200 trials per cell |
+| D | Sweeps | strength (until arithmetic/fact panel degrades), depth 25–70% of layers | KL to unsteered, answer-token mass, entropy logged at every setting | n/a | Drop settings past a KL or accuracy threshold |
+| E | Optional: introspection LoRA on 1B | Train on self-generated localisation examples (held-out vectors) | Binder cross-prediction: a second model trained on the first model's labels | Self ≈ other | Held-out accuracy with CI |
+
+Models: Gemma 3 4B as the main model (Mac MPS), 1B as a negative control (cloud). Prior work suggests untrained localisation appears from about 3B.
+
+## What happens to Phase 1 jobs
+
+- 1B yes/no detection (cloud): let it finish; it documents the confound with better controls.
+- 4B self-specificity (Mac, `130_qv3_4b`): let it finish (cheap, already running).
+- 4B yes/no detection (`140_detect_4b`): held, superseded by A–C.
+
+---
+
 # Next steps: brief and ranked plan (16 Oct 2026, morning)
 
 ## The brief, sharpened
