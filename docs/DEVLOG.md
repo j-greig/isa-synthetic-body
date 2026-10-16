@@ -246,6 +246,16 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 
 **Current best statement:** the model's self-report is moderately and somewhat preferentially sensitive to hidden perturbation magnitude. The preference over the control is suggestive but not yet established (p = 0.05–0.13). Whether a specific direction raises or lowers the report is idiosyncratic.
 
+## 2026-10-16: More sham and null episodes; pooled test (03:31 UTC)
+
+`runs/embodied_ts_more.jsonl`: TS and T0 × add/mul × repeats 6–9 = 16 episodes, code 115f9d2. Pooled analysis in `docs/results/disturbance_pooled.md`.
+
+- **Disturbed** (TS + TE, n = 32): inner r 0.55, control r 0.28. Inner > control, paired p = 0.012 (Wilcoxon p = 0.009).
+- **Null** (T0, n = 16): inner 0.01, control −0.09. Disturbed inner vs null inner: p = 2e-6.
+- **Difference-in-differences** ((inner − control), disturbed vs null): p = 0.19.
+
+**Reading.** That hidden disturbance raises the self-report is solid (n = 32 vs 16). That it raises the self-report *more than* an unrelated 0–9 answer is supported within disturbed episodes (p ≈ 0.01). It is not clearly beyond the small inner–control gap that exists even with no disturbance (p = 0.19). **Verdict: probable, not established.** The next design needs more control questions (several self-unrelated scales) and more episodes, or a within-turn comparison.
+
 ---
 
 ## Template for new entries
