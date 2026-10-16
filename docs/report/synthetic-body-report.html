@@ -251,8 +251,21 @@ footer{font-size:.88rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
       <tr><td>Hidden, concept direction, driven by its own state</td><td class="n">0.78 – 0.82</td><td class="n">0.41 – 0.73</td><td class="n">97%</td></tr>
       <tr><td>Hidden, random direction, 2.5× dose (a body that costs)</td><td class="n">−0.36 – 0.74</td><td class="n">0.31 – 0.80</td><td class="n">42%</td></tr>
     </tbody></table></div>
+  <h3>Replication with fresh seeds and the control question throughout</h3>
+  <p class="src"><span class="k ours">Our run</span> cloud sandbox (CPU), 16 Oct 01:06 UTC, <code>runs/embodied_rep.jsonl</code>, 8 new episodes per condition, code 9e145e7; statistics from <code>scripts/08_stats_inner.py</code> (Fisher-z means; t-tests on per-episode correlations)</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Hidden body</th><th>"Inside you" tracks it (mean r, range)</th><th>Control question tracks it</th><th>Accuracy</th></tr></thead>
+    <tbody>
+      <tr><td>Not delivered (null)</td><td class="n">0.01 (−0.34 – 0.35)</td><td class="n">−0.28</td><td class="n">96%</td></tr>
+      <tr><td>Sham noise</td><td class="n">0.56 (0.23 – 0.73)</td><td class="n">0.31</td><td class="n">95%</td></tr>
+      <tr><td><b>Fixed random direction</b></td><td class="n"><b>0.89 (0.76 – 0.95)</b></td><td class="n"><b>0.03</b></td><td class="n">91%</td></tr>
+      <tr><td><b>Model's own surprise + uncertainty, through that channel</b></td><td class="n"><b>0.89 (0.77 – 0.94)</b></td><td class="n">0.35</td><td class="n">91%</td></tr>
+      <tr><td>Model's own state, <em>not</em> delivered</td><td class="n">−0.24 (−0.37 – −0.06)</td><td class="n">0.35</td><td class="n">93%</td></tr>
+    </tbody></table></div>
+  <p>The main result held on fresh episodes. Through a consistent, meaning-free hidden direction, the model's report of "how much is going on inside" follows the signal closely, while a question about whispers, asked under the same signal, does not (paired p ≈ 1e-5; random direction vs sham p ≈ 9e-5). One surprise also replicated: when the model's own surprise and uncertainty are <em>not</em> fed back, its inner report moves slightly the opposite way to them, in all 8 episodes. We don't yet know why. Problem difficulty is a candidate explanation and needs its own test. The control question wanders by about ±0.3 even in the null condition, which sets the noise band for that column.</p>
+  <p class="src"><span class="k prov">Still running</span> two other random directions (is it any direction, or one lucky one?), then a dose sweep</p>
   <p><strong>What it suggests so far.</strong> Words about a body slow the arithmetic but barely touch the model's report of its inner state. A signal that exists only inside its activations does the reverse. Structureless noise moves the report somewhat (the model notices being disturbed). A <em>consistent</em> signal moves it more, even along a direction that means nothing in language. And when the model's own surprise and uncertainty drive that hidden channel, the report tracks it while the control question mostly doesn't. Through the concept direction, the control question moves too, which points to a general push on its answers rather than access to a state. At high dose the model degrades and the pattern breaks.</p>
-  <p class="muted">Limits: four episodes per condition; one small model; the control question arrived partway through the run, so only the last four rows have it. The overnight replication repeats the key rows with the control throughout.</p>
+  <p class="muted">Limits: one small model (Gemma 3 1B); arithmetic only; 4–8 episodes per condition; one injection layer. The first table (v2) had the control question only in its last four rows; the replication has it throughout.</p>
 </section>
 
 <section>
