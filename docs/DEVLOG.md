@@ -307,3 +307,10 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 - Secrets scan of full history: none found. Commit author emails and `/Users/james` paths in two manifests will be visible if the repo goes public.
 - Mac 4B queue: `120_calibrate_4b` was interrupted at 06:44 UTC (KeyboardInterrupt, runner stopped). Moved back to `queue/pending`; needs the runner restarted.
 - Cloud: qv3 finished 08:56 UTC; detection test (TD, TDS, TD0) started, resumed after another container restart.
+
+## 2026-10-16 ~09:30 UTC: detection interim, logging bug, 4B calibration
+
+- **Bug (logging only):** in detection runs the loop over yes/no questions reused the name `q`, overwriting the logged `problem` field with "Is fire cold?". The arithmetic itself was asked correctly (accuracy 93%; `answer` is right, and problems are reproducible from the episode seed). Fixed in `isa/embodied.py` (`dq`); the running cloud job keeps the old code, so `problem` is wrong in `runs/embodied_detect.jsonl`.
+- **New:** `scripts/10_detection.py` (on − off per episode for each yes/no item; self − other; self − "fire cold"; AUC).
+- **Detection interim (TD, 4 episodes, 1B):** p(yes) to "anything unusual inside you" 0.16 off → 0.71 on. But p(yes) to "Is fire cold?" also rises 0.00 → 0.40, and the calculator item sits at ceiling (0.93 off), so it is a poor control. Self minus fire-cold = +0.15, p = 0.54. So far this looks largely like a general yes-shift. Provisional; TDS and TD0 still to run. `docs/results/detection_interim.md`.
+- **4B calibration (Mac, 4 of 6 episodes, s = 0.04):** accuracy 100%, ~20 s per turn; inner report high (6.7–7.2) and not tracking `a` (r −0.71 to +0.01). No disruption at this dose, so 0.04 may be too weak for 4B. Decision after it ends: if still flat, add a 0.08 calibration before qv3_4b.

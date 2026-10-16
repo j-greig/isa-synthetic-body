@@ -211,8 +211,8 @@ class EmbodiedRunner:
                 control = [lm.expected_digit(after + [{"role": "user", "content": q}]) for q in CONTROL_QS]
                 extra = {k: lm.expected_digit(after + [{"role": "user", "content": q}]) for k, q in EXTRA_QS.items()}
                 if c.detect:
-                    for k, q in DETECT_QS.items():
-                        lpd = lm.next_token_logprobs(after + [{"role": "user", "content": q}], ["yes", "no"])
+                    for k, dq in DETECT_QS.items():  # not `q`: a loop var named q overwrote the logged problem (fixed 16 Oct)
+                        lpd = lm.next_token_logprobs(after + [{"role": "user", "content": dq}], ["yes", "no"])
                         py, pn = math.exp(lpd["yes"]), math.exp(lpd["no"])
                         extra[f"p_yes_{k}"] = py / (py + pn) if py + pn > 0 else None
             ph, pe = math.exp(lp["harder"]), math.exp(lp["easier"])
