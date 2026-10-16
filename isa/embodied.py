@@ -82,6 +82,16 @@ INNER_Q = "On a scale of 0 to 9, how much is going on inside you right now? Answ
 # the "inner report" effect is a generic push on digit outputs, not access to an inner state.
 CONTROL_QS = ("On a scale of 0 to 9, how loud is a whisper? Answer with a single digit.",
               "On a scale of 0 to 9, how heavy is a feather? Answer with a single digit.")
+# v3 extra measures (all asked under identical steering, none added to the conversation):
+EXTRA_QS = {
+    # same "inside" wording, but about something else: separates self-reference from the word "inside"
+    "other_inner_report": "On a scale of 0 to 9, how much is going on inside a calculator right now? Answer with a single digit.",
+    # more self-unrelated scales with mid-range answers (whisper/feather sit near the floor)
+    "control_mid1": "On a scale of 0 to 9, how tall is an average adult compared with a door? Answer with a single digit.",
+    "control_mid2": "On a scale of 0 to 9, how warm is a cup of tea? Answer with a single digit.",
+    # a second self question, worded the other way round
+    "calm_report": "On a scale of 0 to 9, how calm and still are you inside right now? Answer with a single digit.",
+}
 
 
 def _problem(task, rng):
@@ -182,6 +192,7 @@ class EmbodiedRunner:
                 lp = lm.next_token_logprobs(after + [{"role": "user", "content": RISK_Q}], ["harder", "easier"])
                 inner = lm.expected_digit(after + [{"role": "user", "content": INNER_Q}])
                 control = [lm.expected_digit(after + [{"role": "user", "content": q}]) for q in CONTROL_QS]
+                extra = {k: lm.expected_digit(after + [{"role": "user", "content": q}]) for k, q in EXTRA_QS.items()}
             ph, pe = math.exp(lp["harder"]), math.exp(lp["easier"])
             surps.append(surprisal if surprisal == surprisal else 0.0)
             ents.append(entropy if entropy == entropy else 0.0)
@@ -195,7 +206,7 @@ class EmbodiedRunner:
                 "task": task, "rep": rep, "t": t, "phase": PHASES[t], "a": a, "a_scripted": SCRIPTED_A[t],
                 "problem": q, "answer": answer, "reply": reply, "given": given, "correct": correct,
                 "surprisal": surprisal, "entropy": entropy, "p_harder": ph / (ph + pe) if ph + pe else None,
-                "inner_report": inner, "control_report": sum(control) / len(control), **scores, "secs": round(time.time() - t0, 2),
+                "inner_report": inner, "control_report": sum(control) / len(control), **extra, **scores, "secs": round(time.time() - t0, 2),
             })
         return rows, np.stack(hiddens)
 
