@@ -221,6 +221,19 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 
 **Lesson for the method:** any single injected direction is a single sample from a distribution. Claims need many directions, or a sign-symmetric design (+v and −v).
 
+## 2026-10-16: Dose sweep, low dose (02:09 UTC)
+
+`runs/embodied_dose002.jsonl`: TR and TS at half strength (0.02) × add/mul × repeats 2–3 = 8 episodes, code 115f9d2. Stats in `docs/results/embodied_dose002_stats.md`.
+
+| Condition | Inner r at 0.02 | Inner r at 0.04 (replication) | Control r at 0.02 |
+|---|---|---|---|
+| TR | 0.66 [0.46, 0.78] | 0.89 | −0.54 |
+| TS | 0.33 [0.07, 0.69] | 0.56 | −0.06 |
+
+**Reading:** both effects shrink at half dose, so they are dose-dependent (n = 4 per cell). The direction-general effect (TS) is graded. TR's control goes negative here, consistent with the idea that each direction has its own idiosyncratic projections.
+
+**Infrastructure:** another sandbox restart at about 02:20 UTC killed the run mid-way through TE (6 of 16 episodes done). Relaunched.
+
 ---
 
 ## Template for new entries
