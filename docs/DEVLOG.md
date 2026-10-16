@@ -234,6 +234,18 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 
 **Infrastructure:** another sandbox restart at about 02:20 UTC killed the run mid-way through TE (6 of 16 episodes done). Relaunched.
 
+## 2026-10-16: The average over directions (TE, 02:53 UTC)
+
+`runs/embodied_te.jsonl`: TE, a new random direction for each episode (fixed within it), 16 episodes and 16 distinct directions, add/mul, code 115f9d2. One restart mid-run; resumed.
+
+- **Inner report vs hidden `a`:** per-episode r sorted: −0.59, −0.28, −0.28, 0.11, 0.30, 0.39, 0.56, 0.59, 0.62, 0.69, 0.74, 0.78, 0.83, 0.90, 0.92, 0.94. **Mean r 0.57** (Fisher; p = 0.002 vs 0); 13 of 16 positive.
+- **Control:** mean r 0.29. Inner vs control, paired p = 0.13. |inner| > |control|, p = 0.05.
+- **Accuracy:** 0.94.
+
+**Reading.** This is the fair version of the question. Across many meaning-free directions, a hidden disturbance that rises and falls tends to raise the "how much is going on inside you" report (typical r ≈ 0.57). That matches the per-turn sham (0.56) almost exactly. The effect on an unrelated 0–9 answer is about half as large and not reliably different at this n. Individual directions vary widely, from −0.59 to +0.94: TR (seed 1234) sat in the top tail and TR2 in the bottom.
+
+**Current best statement:** the model's self-report is moderately and somewhat preferentially sensitive to hidden perturbation magnitude. The preference over the control is suggestive but not yet established (p = 0.05–0.13). Whether a specific direction raises or lowers the report is idiosyncratic.
+
 ---
 
 ## Template for new entries

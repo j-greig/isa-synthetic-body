@@ -272,7 +272,18 @@ footer{font-size:.88rem;color:var(--muted);display:grid;gap:8px;border-top:1px s
       <tr><td>Direction B</td><td class="n">−0.45 (−0.61 – −0.28)</td><td class="n">0.04</td></tr>
       <tr><td>Direction C</td><td class="n">−0.10 (−0.47 – 0.49)</td><td class="n">−0.53</td></tr>
     </tbody></table></div>
-  <p>We tested two more random directions, to check the effect wasn't specific to one. It was. One direction pushes the inner report up, another pushes it down, and a third does little to it but moves the control question. So a "meaning-free" direction still has arbitrary downstream effects on particular answers. The striking result above is mainly a property of direction A, not evidence that the model senses any consistent hidden signal. What survives is weaker and more general: injecting noise in a different direction every turn raises the inner report (0.56) more than the control (0.31), so disturbance in general registers somewhat. Running now: a new random direction for every episode (the average over many directions), plus more sham episodes.</p>
+  <p>We tested two more random directions, to check the effect wasn't specific to one. It was. One direction pushes the inner report up, another pushes it down, and a third does little to it but moves the control question. So a "meaning-free" direction still has arbitrary downstream effects on particular answers. The striking result above is mainly a property of direction A, not evidence that the model senses any consistent hidden signal. What survives is weaker and more general: injecting noise in a different direction every turn raises the inner report (0.56) more than the control (0.31), so disturbance in general registers somewhat. </p>
+  <h3>The fair test: a different direction every episode</h3>
+  <p class="src"><span class="k ours">Our run</span> cloud sandbox, 16 Oct 02:53 UTC, <code>runs/embodied_te.jsonl</code>, 16 episodes with 16 different random directions, code 115f9d2; <code>docs/results/embodied_te_stats.md</code> &nbsp;·&nbsp; half-dose sweep: <code>runs/embodied_dose002.jsonl</code></p>
+  <div class="tbl"><table>
+    <thead><tr><th>Measure</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>"Inside you" tracks the hidden signal, averaged over 16 directions</td><td class="n"><b>r = 0.57</b> (13 of 16 positive; range −0.59 to 0.94; p = 0.002)</td></tr>
+      <tr><td>Control question, same episodes</td><td class="n">r = 0.29 (difference from inner: p = 0.13)</td></tr>
+      <tr><td>Sham noise (new direction every turn), for comparison</td><td class="n">r = 0.56, control 0.31</td></tr>
+      <tr><td>Half the dose</td><td class="n">sham 0.56 → 0.33; direction A 0.89 → 0.66</td></tr>
+    </tbody></table></div>
+  <p><strong>Current best statement.</strong> On average, a hidden disturbance that rises and falls makes the model report more going on inside, at about r = 0.57, and the effect grows with dose. It moves an unrelated 0–9 answer about half as much, a difference that is suggestive but not yet statistically solid. Any single direction can push the report up or down. Our first headline came from the top end of that spread.</p>
   <p><strong>What it suggests so far (revised 16 Oct, 02:55).</strong> Words about a body slow the arithmetic but barely touch the model's report of its inner state. Signals inside its activations do move that report, but <em>which way</em> depends on the direction: some push it up, some down. The "own state" result rode on direction A, so it inherits the same caveat. The general effect, disturbance raising the report more than an unrelated answer, is real but modest. At high dose the model degrades and the pattern breaks.</p>
   <p class="muted">Limits: one small model (Gemma 3 1B); arithmetic only; 4–8 episodes per condition; one injection layer. The first table (v2) had the control question only in its last four rows; the replication has it throughout.</p>
 </section>
