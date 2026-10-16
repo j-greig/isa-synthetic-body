@@ -203,6 +203,24 @@ TR vs TS: p = 9e-5. TR vs T0: p = 2e-7. TN vs TN0: p = 3e-10 (Welch on Fisher z)
 
 **Reading.** Most of TN0's negative correlation is shared time trend. What's left is a weak negative link between how surprising the problem was and the "inside you" report: a property of the model's baseline behaviour, not evidence of introspection. The TR and TN effects survive the same control untouched.
 
+## 2026-10-16: Direction check, a correction (01:47 UTC)
+
+`runs/embodied_dirs.jsonl`: TR2 and TR3 (random directions with seeds 2 and 3, orthogonalised the same way as TR's seed 1234) × add/mul × repeats 2–5 = 16 episodes, code fd5828c. Stats: `docs/results/embodied_dirs_stats.md`.
+
+| Direction | Inner report r (mean, range) | Control r | Accuracy |
+|---|---|---|---|
+| TR (seed 1234) | **+0.89** [0.76, 0.95] | 0.03 | 0.91 |
+| TR2 (seed 2) | **−0.45** [−0.61, −0.28] | 0.04 | 0.97 |
+| TR3 (seed 3) | −0.10 [−0.47, 0.49] | −0.53 | 0.97 |
+
+**Correction.** The headline result (a meaning-free hidden direction drives the inner report) is **direction-specific**. A random direction is not meaning-free *downstream*: each one has arbitrary projections onto particular answers. TR happened to push "inside you" up; TR2 pushes it down; TR3 moves the whisper question instead. The TN result used TR's direction, so it inherits the caveat.
+
+**What survives:** the sham (new direction each turn) raises the inner report more than the control (0.56 vs 0.31, paired p = 0.013, n = 8). That is a modest, direction-general disturbance effect.
+
+**Actions:** report page corrected (v5). Queue v4 adds TE (a new random direction per episode, fixed within it, 16 episodes), which estimates the average effect over directions, and 8 more TS and T0 episodes. Then the dose sweep and the closed loop.
+
+**Lesson for the method:** any single injected direction is a single sample from a distribution. Claims need many directions, or a sign-symmetric design (+v and −v).
+
 ---
 
 ## Template for new entries
