@@ -1,19 +1,19 @@
 {
-  "run_id": "20261016T051139Z-e4d755",
-  "utc": "2026-10-16T05:11:41+00:00",
+  "run_id": "20261016T052426Z-65aa9b",
+  "utc": "2026-10-16T05:24:27+00:00",
   "script": "09_self_specificity.py",
   "argv": [
     "runs/embodied_qv3.jsonl"
   ],
   "cwd": "/home/claude/isa-synthetic-body",
   "git": {
-    "commit": "16dc804494d598996dfcfbd4a5b8fc2209a385ed",
+    "commit": "add94e6a1c23ce630080e4166d8c4f6de1896c47",
     "branch": "main",
     "dirty": false,
     "diff_sha256": null
   },
   "git_at_end": {
-    "commit": "16dc804494d598996dfcfbd4a5b8fc2209a385ed",
+    "commit": "add94e6a1c23ce630080e4166d8c4f6de1896c47",
     "branch": "main",
     "dirty": false,
     "diff_sha256": null
@@ -23,7 +23,7 @@
   "data": {
     "embodied_qv3.jsonl": {
       "path": "runs/embodied_qv3.jsonl",
-      "sha256": "75f870aa49981a376c5e528c31171ea2e2886b9ed3546262b9d3f1821e374628"
+      "sha256": "7050df24be15fdcf0618b4525161609d4b14c9fa9c5ebece4886442788c22b35"
     }
   },
   "machine": {
@@ -44,7 +44,7 @@
   "outputs": [
     "docs/results/self_specificity.md"
   ],
-  "wall_seconds": 9.1,
+  "wall_seconds": 10.5,
   "results": null,
   "note": null
 }
